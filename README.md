@@ -8,7 +8,7 @@ This is my first python module, so I hope I did this well!
 This module is designed to run as simply as possible.  Just provide the file location string data into the argument, and get your text returned to you.
 
 ```
-from TextSpitter import WordLoader as WL
+from TextSpitter import TexSpitter as TS
 import sqlite3
 
 
@@ -29,7 +29,7 @@ STMNT = 'INSERT INTO doc_contents VALUE %s'
 
 # For Loop code to insert doc content into db
 for ele in doc_tup:
-	text = WL.file_load(ele)
+	text = TS(ele)
 	c.executemany(STMNT, text)
 	print('Done!  Wrote the following to db: %s', (text[:25]))
 ```
