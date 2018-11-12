@@ -1,7 +1,10 @@
 import fitz
 import mimetypes
-import win32com.client
 from docx import Document
+try:
+    import win32com.client
+except ImportError:
+    continue
 
 
 def PdfFileRead(file):

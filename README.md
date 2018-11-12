@@ -14,12 +14,13 @@ import sqlite3
 
 folder_loc = 'foo/bar/'
 
-doc_file = folder_loc + 'file_thing.doc'
+# doc_file = folder_loc + 'file_thing.doc'
 docx_file = folder_loc + 'file_thing.docx'
 pdf_file = folder_loc + 'file_thing.pdf'
 text_file = folder_loc + 'file_thing.txt'
 
-doc_tup = (doc_file, docx_file, pdf_file, text_file)
+doc_tup = (docx_file, pdf_file, text_file)
+# doc_tup = (doc_file, docx_file, pdf_file, text_file)
 
 # SQL code to write to database
 conn = sqlite3.connect('example_db')
@@ -36,6 +37,7 @@ for ele in doc_tup:
 
 ## TO DOs ##
 * [x] push to github
+* [x] Remove .doc support due to legacy format's extensive proprietary reqs 
 * [ ] spruce up documentation
 * [ ] solicit feedback
 * [ ] expand functionality to other file types

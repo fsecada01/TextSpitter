@@ -10,14 +10,15 @@ class WordLoader:
         file_loc = self.name
         file_type = file_loc.split('.')[-1]
 
-        file_types_tup = ('pdf', 'docx', 'doc', 'txt', 'text')
+        # file_types_tup = ('pdf', 'docx', 'doc', 'txt', 'text')
+        file_types_tup = ('pdf', 'docx', 'txt', 'text')
         if file_type in file_types_tup:
             if file_type == file_types_tup[0]:
                 text = PdfFileRead(self.name)
             elif file_type == file_types_tup[1]:
                 text = DocxFileRead(self.text)
-            elif file_type == file_types_tup[2]:
-                text = DocFileRead(self.text)
+            # elif file_type == file_types_tup[2]:
+            #     text = DocFileRead(self.text)
             else:
                 text = TextFileRead(self.text)
             return text

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="TextSpitter",
-    version="0.1",
+    version="0.2",
     author="Francis Secada",
     author_email="francis.secada@gmail.com",
     description="Python package that spits out text from your document files!",
