@@ -4,6 +4,12 @@ I created this little app to help me process documents from folder sets and batc
 
 This is my first python module, so I hope I did this well!
 
+## Installation  ##
+* Type `pip install TextSpitter`
+* **OPTIONAL** type `pip install PyMuPDF` to install the Python-MuPDF engine for better fidelity with text extraction (i.e.: maintaining correct White Spacing)
+	* You will need to follow instructions to ensure that PyMuPDF's dependencies install to your system.  There are wheels and binaries available for Windows, Linux, and MacOSX, though if you're on something weird like NetBSD/FreeBSD/specialty linux distros, you may e SOL.  Fortunately, CLI options like Yum, Pkgin, Apt-Get and so forth will have packages available straight from the terminal.
+	* For detailed instructions, please visit here: https://github.com/rk700/PyMuPDF and maybe give those guys some kudos, because they worked their tails off.
+
 ## Directions ##
 This module is designed to run as simply as possible.  Just provide the file location string data into the argument, and get your text returned to you.
 

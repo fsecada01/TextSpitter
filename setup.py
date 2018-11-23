@@ -13,7 +13,10 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/fsecada01/TextSpitter",
     packages=setuptools.find_packages(),
-    install_requires=['python-docx', 'PyMuPDF'],
+    install_requires=['python-docx>=0.8.6',
+                      # 'PyMuPDF',
+                      'PyPDF2'
+                      ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
