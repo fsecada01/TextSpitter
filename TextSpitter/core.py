@@ -15,12 +15,14 @@ def PdfFileRead(file):
     i = 0
     text = ''
 
-    if 'fitz' in dir():
+    # if 'fitz' in dir():
+    try:
         pdf_file = fitz.open(file)
         while i < len(pdf_file):
             text += pdf_file[i].getText('text')
             i += 1
-    else:
+    # else:
+    except Exception as e:
         pdf_file = open(file, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_file)
         while i < pdf_reader.numPages:
