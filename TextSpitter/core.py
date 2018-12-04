@@ -22,7 +22,7 @@ def PdfFileRead(file):
             i += 1
     else:
         pdf_file = open(file, 'rb')
-        pdf_reader = PyPDF2.PdfFileReader(file)
+        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
         while i < pdf_reader.numPages:
             payload = pdf_reader.getPage(i).extractText().replace('\n', '')
             text += payload.encode('ascii', 'ignore').decode('unicode_escape')
