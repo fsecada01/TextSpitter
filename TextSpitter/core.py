@@ -15,8 +15,8 @@ def PdfFileRead(file):
     those characters get filtered out.'''
 
     try:
-        with file.open().read() as f:
-            pdf_file = fitz.Document(stream=f, filetype='pdf')
+        with file.open() as f:
+            pdf_file = fitz.Document(stream=f.read(), filetype='pdf')
             raw_text = [ele.getText('text') for ele in pdf_file]
             text = ''.join(raw_text)
     # else:
@@ -29,8 +29,8 @@ def PdfFileRead(file):
 
 
 def DocxFileRead(file):
-    with file.open().read() as f:
-        f_stream = BytesIO(f)
+    with file.open() as f:
+        f_stream = BytesIO(f.read())
         document = Document(f_stream)
         raw_text = [p.text for p in document.paragraphs]
         text = '\n'.join(raw_text)

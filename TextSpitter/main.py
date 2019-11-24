@@ -17,7 +17,7 @@ class WordLoader:
             if file_type == file_types_tup[0]:
                 text = PdfFileRead(self.name)
             elif file_type == file_types_tup[1]:
-                text = DocxFileRead(self.text)
+                text = DocxFileRead(self.name)
             # elif file_type == file_types_tup[2]:
             #     text = DocFileRead(self.text)
             else:

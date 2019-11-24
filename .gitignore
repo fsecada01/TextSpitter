@@ -2,3 +2,4 @@ build/
 dist/
 TextSpitter.egg-info/
 v */
+git_push.bat
