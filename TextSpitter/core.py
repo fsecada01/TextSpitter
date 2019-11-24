@@ -1,48 +1,44 @@
 import mimetypes
 from docx import Document
+from io import BytesIO
 try:
     import fitz
-except Exception as e:
+except Exception:
     import PyPDF2
 
 
 def PdfFileRead(file):
     '''This current code provides a workaround in case MuPDF (a dependency for
     PyMuPDF) is not usable in the development environment. For such instances,
-    the module relies on PyPDF2 to extract text data.  However, because of the
+    the module relies on PyPDF2 to extract text data. However, because of the
     likelihood of white spaces being rampant in the extracted string data,
     those characters get filtered out.'''
-    i = 0
-    text = ''
 
-    # if 'fitz' in dir():
     try:
-        pdf_file = fitz.open(file)
-        while i < len(pdf_file):
-            text += pdf_file[i].getText('text')
-            i += 1
+        with file.open().read() as f:
+            pdf_file = fitz.Document(stream=f, filetype='pdf')
+            raw_text = [ele.getText('text') for ele in pdf_file]
+            text = ''.join(raw_text)
     # else:
-    except Exception as e:
-        pdf_file = open(file, 'rb')
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
-        while i < pdf_reader.numPages:
-            payload = pdf_reader.getPage(i).extractText().replace('\n', '')
-            text += payload.encode('ascii', 'ignore').decode('unicode_escape')
-            i += 1
+    except Exception:
+        with open(file, 'rb') as f:
+            pdf_reader = PyPDF2.PdfFileReader(f)
+            raw_text = [ele.extractText() for ele in pdf_reader.pages]
+            text = ''.join(raw_text)
     return text
 
 
 def DocxFileRead(file):
-    document = Document(file)
-    text = ''
-    for p in document.paragraphs:
-        text = text + p.text + '\n'
+    with file.open().read() as f:
+        f_stream = BytesIO(f)
+        document = Document(f_stream)
+        raw_text = [p.text for p in document.paragraphs]
+        text = '\n'.join(raw_text)
     return text
 
 
 def TextFileRead(file):
-    text = open(file, 'r').read()
-    return text
+    return open(file, 'r').read()
 
 
 def get_file_type(file):
