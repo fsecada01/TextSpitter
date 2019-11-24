@@ -15,37 +15,22 @@ This module is designed to run as simply as possible.  Just provide the file loc
 
 ```
 from TextSpitter import TexSpitter as TS
-import sqlite3
-
-
 folder_loc = 'foo/bar/'
 
-# doc_file = folder_loc + 'file_thing.doc'
 docx_file = folder_loc + 'file_thing.docx'
 pdf_file = folder_loc + 'file_thing.pdf'
 text_file = folder_loc + 'file_thing.txt'
 
 doc_tup = (docx_file, pdf_file, text_file)
-# doc_tup = (doc_file, docx_file, pdf_file, text_file)
 
-# SQL code to write to database
-conn = sqlite3.connect('example_db')
-c= conn.cursor()
-
-STMNT = 'INSERT INTO doc_contents VALUE %s'
-
-# For Loop code to insert doc content into db
-for ele in doc_tup:
-	text = TS(ele)
-	c.executemany(STMNT, text)
-	print('Done!  Wrote the following to db: %s', (text[:25]))
+raw_text_payload = [TS(ele) for ele in doc_tup]
+text = '\n'.join(raw_text_payload)
+return text
 ```
 
 ## TO DOs ##
-* [x] push to github
-* [x] Remove .doc support due to legacy format's extensive proprietary reqs 
-* [ ] spruce up documentation
-* [ ] solicit feedback
+* [x] spruce up documentation
+* [X] Add stream functionality for s3-based file reading
 * [ ] expand functionality to other file types
 * [ ] TDB
 
