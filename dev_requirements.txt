@@ -182,7 +182,7 @@ pytz==2021.1
     # via babel
 pywin32-ctypes==0.2.0
     # via keyring
-pywin32==300
+pywin32==301
     # via
     #   jupyter-core
     #   jupyter-server
