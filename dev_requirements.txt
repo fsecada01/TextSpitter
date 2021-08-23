@@ -111,7 +111,7 @@ jupyterlab-pygments==0.1.2
     # via nbconvert
 jupyterlab-server==2.4.0
     # via jupyterlab
-jupyterlab==3.0.14
+jupyterlab==3.0.17
     # via -r dev_requirements.in
 keyring==23.0.1
     # via twine
