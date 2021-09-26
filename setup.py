@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="TextSpitter",
-    version="0.3.3_Post_0",
+    version="0.3.4",
     author="Francis Secada",
     author_email="francis.secada@gmail.com",
     description="Python package that spits out text from your document files!",
@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/fsecada01/TextSpitter",
     packages=setuptools.find_packages(),
     install_requires=[
-        "python-docx>=0.8.6",
+        "python-docx",
         # 'PyMuPDF',
         "PyPDF2",
     ],

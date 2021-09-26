@@ -1,10 +1,11 @@
-from .core import *
+from .core import FileExtractor
+import mimetypes
 
 
 class WordLoader:
     def __init__(self, file):
         self.name = file
-        self.text = str(file)
+        self.extractor = FileExtractor(file)
 
     def file_load(self):
         file_loc = self.name
@@ -15,13 +16,13 @@ class WordLoader:
         file_types_tup = ("pdf", "docx", "txt", "text")
         if file_type in file_types_tup:
             if file_type == file_types_tup[0]:
-                text = PdfFileRead(self.name)
+                text = self.extractor.PdfFileRead()
             elif file_type == file_types_tup[1]:
-                text = DocxFileRead(self.name)
+                text = self.extractor.DocxFileRead()
             # elif file_type == file_types_tup[2]:
             #     text = DocFileRead(self.text)
             else:
-                text = TextFileRead(self.text)
+                text = self.extractor.TextFileRead()
             return text
         else:
             mime_type = mimetypes.guess_type(file_loc)
