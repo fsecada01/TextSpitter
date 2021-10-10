@@ -35,7 +35,9 @@ class FileExtractor:
         return mime_type.split("/")[1]
 
     def get_contents(self):
-        return self.file.read()
+        with self.file as f:
+            f.seek(0, 0)
+            return f.read()
 
     def PdfFileRead(self):
         """This current code provides a workaround in case MuPDF (a dependency for
