@@ -22,7 +22,7 @@ class FileExtractor:
             self.file_ext = filename.split(".")[-1]
         else:
             if hasattr(file_obj, "name"):
-                self.file = file_obj.name
+                self.file = file_obj
                 self.file_ext = file_obj.name.split(".")[-1]
             else:
                 raise Exception(
