@@ -1,8 +1,8 @@
 from .main import WordLoader
 
 
-name = 'TextSpitter'
+name = "TextSpitter"
 
 
-def TextSpitter(file_path):
-    return WordLoader(file_path).file_load()
+def TextSpitter(file_obj=None, filename: str or None = None):
+    return WordLoader(file_obj=file_obj, filename=filename).file_load()

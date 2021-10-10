@@ -22,13 +22,13 @@ bleach==4.1.0
     # via
     #   nbconvert
     #   readme-renderer
-certifi==2021.5.30
+certifi==2021.10.8
     # via requests
 cffi==1.14.6
     # via argon2-cffi
 charset-normalizer==2.0.6
     # via requests
-click==8.0.1
+click==8.0.2
     # via black
 colorama==0.4.4
     # via
@@ -36,7 +36,7 @@ colorama==0.4.4
     #   ipython
     #   tqdm
     #   twine
-debugpy==1.4.3
+debugpy==1.5.0
     # via ipykernel
 decorator==5.1.0
     # via ipython
@@ -72,7 +72,7 @@ ipython-genutils==0.2.0
     #   notebook
 jedi==0.18.0
     # via ipython
-jinja2==3.0.1
+jinja2==3.0.2
     # via
     #   jupyter-server
     #   jupyterlab
@@ -81,11 +81,11 @@ jinja2==3.0.1
     #   notebook
 json5==0.9.6
     # via jupyterlab-server
-jsonschema==3.2.0
+jsonschema==4.0.1
     # via
     #   jupyterlab-server
     #   nbformat
-jupyter-client==7.0.3
+jupyter-client==7.0.6
     # via
     #   ipykernel
     #   jupyter-server
@@ -99,12 +99,12 @@ jupyter-core==4.8.1
     #   nbconvert
     #   nbformat
     #   notebook
-jupyter-server==1.11.0
+jupyter-server==1.11.1
     # via
     #   jupyterlab
     #   jupyterlab-server
     #   nbclassic
-jupyterlab==3.1.13
+jupyterlab==3.1.18
     # via -r dev_requirements.in
 jupyterlab-pygments==0.1.2
     # via nbconvert
@@ -181,7 +181,7 @@ pyrsistent==0.18.0
     # via jsonschema
 python-dateutil==2.8.2
     # via jupyter-client
-pytz==2021.1
+pytz==2021.3
     # via babel
 pywin32==301
     # via jupyter-core
@@ -194,9 +194,9 @@ pyzmq==22.3.0
     #   jupyter-client
     #   jupyter-server
     #   notebook
-readme-renderer==29.0
+readme-renderer==30.0
     # via twine
-regex==2021.9.24
+regex==2021.10.8
     # via black
 requests==2.26.0
     # via
@@ -217,9 +217,7 @@ send2trash==1.8.0
 six==1.16.0
     # via
     #   bleach
-    #   jsonschema
     #   python-dateutil
-    #   readme-renderer
 sniffio==1.2.0
     # via anyio
 terminado==0.12.1
@@ -266,7 +264,7 @@ webencodings==0.5.1
     # via bleach
 websocket-client==1.2.1
     # via jupyter-server
-zipp==3.5.0
+zipp==3.6.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

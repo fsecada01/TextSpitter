@@ -5,3 +5,4 @@ v */
 git_push.bat
 setup_build_script.bat
 share/
+__pycache__

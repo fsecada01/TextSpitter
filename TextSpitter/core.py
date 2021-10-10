@@ -1,7 +1,7 @@
 import mimetypes
 from docx import Document
-from io import BytesIO
-from typing import BinaryIO
+from io import FileIO, BytesIO
+from typing import IO
 
 
 class FileExtractor:
@@ -9,32 +9,33 @@ class FileExtractor:
     Wrapper for extracting file contents to string
     """
 
-    def __init__(self, file: str or BinaryIO):
-        if type(file) == BinaryIO:
-            self.file = file
-            self.name = file.name
-        elif type(file) == str:
-            self.file = None
-            self.name = file
+    def __init__(
+        self,
+        file_obj=None,
+        filename: str or None = None,
+    ):
+        """
+        The extractor wrapper will initialize by assinging the filename to the object's file property; if a file-like object is provided instead of a name, then a file_ext arg will be required.
+        """
+        if filename:
+            self.file = FileIO(filename)
+            self.file_ext = filename.split(".")[-1]
+        else:
+            if hasattr(file_obj, "name"):
+                self.file = file_obj.name
+                self.file_ext = file_obj.name.split(".")[-1]
+            else:
+                raise Exception(
+                    "Your file object does not contain a name attribute. Please add a name attribute with a file extension, and try again. Need the file ext. data for mime-typing."
+                )
 
     @staticmethod
     def get_file_type(file):
         mime_type = mimetypes.guess_type(file)[0]
-        guess_file_type = mime_type.split("/")[1]
-        return guess_file_type
+        return mime_type.split("/")[1]
 
     def get_contents(self):
-        write_mode = "rb+"
-        if ".txt" in self.name:
-            write_mode = "r+"
-        if self.file:
-            file = self.file
-            with file.open() as f:
-                contents = f.read()
-        else:
-            with open(self.name, write_mode) as f:
-                contents = f.read()
-        return contents
+        return self.file.read()
 
     def PdfFileRead(self):
         """This current code provides a workaround in case MuPDF (a dependency for
