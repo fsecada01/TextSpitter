@@ -72,4 +72,5 @@ class FileExtractor:
         return text
 
     def TextFileRead(self):
-        return self.get_contents()
+        text = open(self.file).read()
+        return text
