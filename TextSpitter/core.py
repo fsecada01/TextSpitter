@@ -52,7 +52,7 @@ class FileExtractor:
             import fitz
 
             pdf_file = fitz.Document(stream=contents, filetype="pdf")
-            raw_text = [ele.getText("text") for ele in pdf_file]
+            raw_text = [ele.get_text("text") for ele in pdf_file]
             text = "".join(raw_text)
         # else:
         except Exception:
@@ -72,4 +72,5 @@ class FileExtractor:
         return text
 
     def TextFileRead(self):
-        return self.get_contents()
+        text = open(self.file).read()
+        return text

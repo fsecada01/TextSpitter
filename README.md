@@ -14,7 +14,7 @@ This is my first python module, so I hope I did this well!
 This module is designed to run as simply as possible.  Just provide the file location string data into the argument, and get your text returned to you.
 
 ```
-from TextSpitter import TexSpitter as TS
+from TextSpitter import TextSpitter as TS
 folder_loc = 'foo/bar/'
 
 docx_file = folder_loc + 'file_thing.docx'
