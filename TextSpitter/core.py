@@ -15,7 +15,9 @@ class FileExtractor:
         filename: str or None = None,
     ):
         """
-        The extractor wrapper will initialize by assinging the filename to the object's file property; if a file-like object is provided instead of a name, then a file_ext arg will be required.
+        The extractor wrapper will initialize by assinging the filename to the
+        object's file property; if a file-like object is provided instead of a
+        name, then a file_ext arg will be required.
         """
         if filename:
             self.file = FileIO(filename)
@@ -26,7 +28,9 @@ class FileExtractor:
                 self.file_ext = file_obj.name.split(".")[-1]
             else:
                 raise Exception(
-                    "Your file object does not contain a name attribute. Please add a name attribute with a file extension, and try again. Need the file ext. data for mime-typing."
+                    "Your file object does not contain a name attribute. Please"
+                    " add a name attribute with a file extension, and try "
+                    "again. Need the file ext. data for mime-typing."
                 )
 
     @staticmethod
@@ -40,11 +44,13 @@ class FileExtractor:
             return f.read()
 
     def PdfFileRead(self):
-        """This current code provides a workaround in case MuPDF (a dependency for
-        PyMuPDF) is not usable in the development environment. For such instances,
-        the module relies on PyPDF2 to extract text data. However, because of the
-        likelihood of white spaces being rampant in the extracted string data,
-        those characters get filtered out."""
+        """
+        This current code provides a workaround in case MuPDF (a dependency
+        for PyMuPDF) is not usable in the development environment. For such
+        instances, the module relies on PyPDF2 to extract text data. However,
+        because of the likelihood of white spaces being rampant in the
+        extracted string data, those characters get filtered out.
+        """
 
         contents = self.get_contents()
 
@@ -72,5 +78,5 @@ class FileExtractor:
         return text
 
     def TextFileRead(self):
-        text = open(self.file).read()
-        return text
+        with open(self.file) as f:
+            return f.read()

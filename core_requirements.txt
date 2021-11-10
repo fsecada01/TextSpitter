@@ -4,9 +4,9 @@
 #
 #    pip-compile core_requirements.in
 #
-lxml==4.6.3
+lxml==4.6.4
     # via python-docx
-pymupdf==1.18.19
+pymupdf==1.19.1
     # via -r core_requirements.in
 pypdf2==1.26.0
     # via -r core_requirements.in
