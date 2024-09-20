@@ -1,0 +1,9 @@
+dist/
+TextSpitter.egg-info/
+bin/
+share/
+__pycache__
+labs
+.venv
+tests
+*.7z

@@ -1,0 +1,88 @@
+[tool.ruff]
+fix = true
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "migrations",
+]
+
+line-length = 80
+
+[tool.ruff.lint]
+select = ["E", "F", "B"]
+#select = ["E", "F", "I", "PL", "I", "B"]
+ignore = ["B008"]
+ignore-init-module-imports = true
+unfixable = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F403", "F405", "E501"]
+"consts.py" = ["E501"]
+
+[tool.black]
+line-length = 80
+target-version = ['py310', 'py311', 'py312']
+extend-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+  | profiling
+)/
+'''
+[tool.isort]
+profile = "black"
+line_length = 80
+#multi_line_output = 3
+#include_trailing_comma = true
+#force_grid_wrap = 0
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "textspitter_fsecada01"
+dynamic = ["dependencies", "version"]
+authors = [
+  { name="Francis Secada", email="francis.secada@gmail.com" },
+]
+description = "A text-extraction application that facilitates string consumption."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ['core_requirements.txt']}
+optional-dependencies = {dev = { file = ["dev_requirements.txt"] }}
+version = {attr = "TextSpitter.__version__"}
+readme = {file = ['README.md']}
+
+[project.urls]
+Homepage = "https://github.com/fsecada01/TextSpitter"
+Issues = "https://github.com/fsecada01/TextSpitter/issues"
