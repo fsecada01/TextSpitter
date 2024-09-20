@@ -37,6 +37,6 @@ return text
 ## WANT TO CONTRIBUTE!? ##
 _*OH MY GOD, PLEASE DO.*_
 
-Just make a pull request and add whatever you want (or fix whatever you want).  I'll review and approve if everything seems good.  
+Just make a pull request and add whatever you want (or fix whatever you want).  I'll review and approve if everything seems good.
 
 Thanks, everyone!

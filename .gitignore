@@ -1,8 +1,9 @@
-build/
 dist/
 TextSpitter.egg-info/
-v */
-git_push.bat
-setup_build_script.bat
+bin/
 share/
 __pycache__
+labs
+.venv
+tests
+*.7z
