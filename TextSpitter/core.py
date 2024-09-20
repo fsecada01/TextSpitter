@@ -1,5 +1,5 @@
 """
-Doc String
+Core application that contains the `FileExtractor` class object
 """
 
 import mimetypes
@@ -24,6 +24,9 @@ class FileExtractor:
         The extractor wrapper will initialize by assigning the filename to the
         object's file property; if a file-like object is provided instead of a
         name, then a file_ext arg will be required.
+
+        `file_name` is depreciated.
+
         Args:
             file_obj: str | Path | None
             filename: : str | None
@@ -32,19 +35,24 @@ class FileExtractor:
         if filename:
             self.file = FileIO(filename)
             self.file_ext = filename.split(".")[-1]
+        elif isinstance(file_obj, str):
+            file_obj = Path(file_obj)
+
         elif file_obj and any((isinstance(file_obj, x) for x in (Path, IO))):
-            if hasattr(file_obj, "name"):
-                self.file = file_obj
-                self.file_ext = file_obj.name.split(".")[-1]
-            else:
-                raise Exception(
-                    "Your file object does not contain a name attribute. Please"
-                    " add a name attribute with a file extension, and try "
-                    "again. Need the file ext. data for mime-typing."
-                )
+            pass
+
+        if hasattr(file_obj, "name"):
+            self.file = file_obj
+            self.file_ext = file_obj.name.split(".")[-1]
+        else:
+            raise Exception(
+                "Your file object does not contain a name attribute. Please"
+                " add a name attribute with a file extension, and try "
+                "again. Need the file ext. data for mime-typing."
+            )
 
     @staticmethod
-    def get_file_type(file):
+    def get_file_type(file: str | Path):
         """
         A static method that guesses the mime type for a given file object.
         The return value is taken from the sliced value from

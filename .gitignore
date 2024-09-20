@@ -7,3 +7,4 @@ labs
 .venv
 tests
 *.7z
+*.env
