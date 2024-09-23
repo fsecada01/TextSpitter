@@ -4,7 +4,7 @@ Doc string
 
 import os
 
-__version__ = os.environ.get("VERSION", "0.3.7")
+__version__ = os.environ.get("VERSION", "0.3.7b0")
 
 from .main import WordLoader
 
