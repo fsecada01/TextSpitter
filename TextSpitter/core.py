@@ -74,8 +74,9 @@ class FileExtractor:
         Returns:
             str | int | bytes
         """
-        with self.file as f:
-            f.seek(0, 0)
+        mime_type = self.get_file_type(self.file)
+        open_mode = "r" if "text" in mime_type else "rb+"
+        with self.file.open(open_mode) as f:
             return f.read()
 
     def pdf_file_read(self):
@@ -125,5 +126,5 @@ class FileExtractor:
         Returns:
             str
         """
-        with open(self.file) as f:
+        with self.file.open() as f:
             return f.read()

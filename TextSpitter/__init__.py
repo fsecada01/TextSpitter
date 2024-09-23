@@ -2,7 +2,11 @@
 Doc string
 """
 
-from TextSpitter.main import WordLoader
+import os
+
+__version__ = os.environ.get("VERSION", "0.3.7")
+
+from .main import WordLoader
 
 name = "TextSpitter"
 

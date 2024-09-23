@@ -1,12 +1,12 @@
 """
-Doc String
+The main application to host the `WordLoader` object.
 """
 
 from pathlib import Path
 from typing import IO
 
-from TextSpitter.core import FileExtractor
-from TextSpitter.logging import logger
+from .core import FileExtractor
+from .logger import logger
 
 
 class WordLoader:
@@ -50,7 +50,8 @@ class WordLoader:
                 text = self.file.text_file_read()
             return text
         else:
-            mime_type = self.file.get_file_type(self.file.name)
+            mime_type = self.file.get_file_type(self.file.file.name)
+
             logger.error(
                 f"You are using an incorrect file format for file submissions. "
                 f"Please upload a .docx/.doc/.txt/.pdf file OR! Note the "
