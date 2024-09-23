@@ -8,3 +8,4 @@ labs
 tests
 *.7z
 *.env
+*.egg*/
