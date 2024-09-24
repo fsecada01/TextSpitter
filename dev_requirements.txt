@@ -59,7 +59,7 @@ importlib-metadata==4.8.2
     #   twine
 ipykernel==6.5.0
     # via notebook
-ipython==7.29.0
+ipython==8.10.0
     # via
     #   ipykernel
     #   jupyterlab
