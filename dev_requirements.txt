@@ -224,7 +224,7 @@ testpath==0.5.0
     # via nbconvert
 tomli==1.2.2
     # via black
-tornado==6.1
+tornado==6.4.2
     # via
     #   ipykernel
     #   jupyter-client
