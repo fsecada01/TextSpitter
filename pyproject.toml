@@ -58,36 +58,52 @@ line_length = 80
 #include_trailing_comma = true
 #force_grid_wrap = 0
 
-[build-system]
-requires = ["setuptools>=61.0", "build", "python-docx", "loguru"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "textspitter"
-dynamic = ["dependencies", "optional-dependencies", "version"]
+# dynamic = ["version"]
+version = '0.3.7b1'
 authors = [
   { name="Francis Secada", email="francis.secada@gmail.com" },
 ]
 description = "A text-extraction application that facilitates string consumption."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "colorama==0.4.6",
+    "loguru==0.7.2",
+    "lxml==5.3.0",
+    "pymupdf==1.24.14",
+    "pypdf2==3.0.1",
+    "python-docx==1.1.2",
+    "typing-extensions==4.12.2",
+    "win32-setctime==1.1.0",
+]
+
 
 [tool.setuptools]
-#py-modules = ["TextSpitter"]
+# py-modules = ["TextSpitter"]
 packages = ["TextSpitter"]
 #package-dir = {"" = "TextSpitter"}
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["core_requirements.txt"]}
-optional-dependencies = {dev = { file = ["dev_requirements.txt"] }}
-version = {attr = "TextSpitter.__version__"}
-readme = {file = ['README.md']}
+# [tool.setuptools.dynamic]
+# version = {attr = "TextSpitter.__version__"}
+# readme = {file = ['README.md']}
 
 [project.urls]
 Homepage = "https://github.com/fsecada01/TextSpitter"
 Issues = "https://github.com/fsecada01/TextSpitter/issues"
+
+[dependency-groups]
+dev = [
+    "black>=24.10.0",
+    "isort>=5.13.2",
+    "jupyterlab>=4.3.1",
+    "jupyterlab-code-formatter>=3.0.2",
+    "ruff>=0.8.0",
+    "twine>=5.1.1",
+]

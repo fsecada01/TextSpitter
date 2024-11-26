@@ -3,7 +3,7 @@ Core application that contains the `FileExtractor` class object
 """
 
 import mimetypes
-from io import BytesIO, FileIO
+from io import BytesIO
 from pathlib import Path
 from typing import IO
 
@@ -25,7 +25,7 @@ class FileExtractor:
         object's file property; if a file-like object is provided instead of a
         name, then a file_ext arg will be required.
 
-        `file_name` is depreciated.
+        `filename` is depreciated.
 
         Args:
             file_obj: str | Path | None
@@ -33,23 +33,28 @@ class FileExtractor:
         """
 
         if filename:
-            self.file = FileIO(filename)
+            self.file = Path(filename)
             self.file_ext = filename.split(".")[-1]
-        elif isinstance(file_obj, str):
-            file_obj = Path(file_obj)
-
-        elif file_obj and any((isinstance(file_obj, x) for x in (Path, IO))):
-            pass
-
-        if hasattr(file_obj, "name"):
-            self.file = file_obj
-            self.file_ext = file_obj.name.split(".")[-1]
+            self.file_name = self.file.name
         else:
-            raise Exception(
-                "Your file object does not contain a name attribute. Please"
-                " add a name attribute with a file extension, and try "
-                "again. Need the file ext. data for mime-typing."
-            )
+            if isinstance(file_obj, str):
+                file_obj = Path(file_obj)
+
+            elif file_obj and any(
+                (isinstance(file_obj, x) for x in (Path, IO))
+            ):
+                pass
+
+            if hasattr(file_obj, "name"):
+                self.file = file_obj
+                self.file_ext = file_obj.name.split(".")[-1]
+                self.file_name = file_obj.name
+            else:
+                raise Exception(
+                    "Your file object does not contain a name attribute. Please"
+                    " add a name attribute with a file extension, and try "
+                    "again. Need the file ext. data for mime-typing."
+                )
 
     @staticmethod
     def get_file_type(file: str | Path):
@@ -74,7 +79,11 @@ class FileExtractor:
         Returns:
             str | int | bytes
         """
-        mime_type = self.get_file_type(self.file)
+        mime_type = (
+            self.get_file_type(self.file)
+            if isinstance(self.file, str)
+            else self.get_file_type(self.file_name)
+        )
         open_mode = "r" if "text" in mime_type else "rb+"
         with self.file.open(open_mode) as f:
             return f.read()
