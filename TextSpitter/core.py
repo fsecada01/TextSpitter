@@ -84,7 +84,7 @@ class FileExtractor:
             if isinstance(self.file, str)
             else self.get_file_type(self.file_name)
         )
-        open_mode = "r" if "text" in mime_type else "rb+"
+        open_mode = "r" if "text" in mime_type else "rb"
         with self.file.open(open_mode) as f:
             return f.read()
 

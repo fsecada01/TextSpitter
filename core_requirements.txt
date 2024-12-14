@@ -2,11 +2,11 @@
 #    uv pip compile core_requirements.in -o core_requirements.txt
 colorama==0.4.6
     # via loguru
-loguru==0.7.2
+loguru==0.7.3
     # via -r core_requirements.in
 lxml==5.3.0
     # via python-docx
-pymupdf==1.24.14
+pymupdf==1.25.1
     # via -r core_requirements.in
 pypdf2==3.0.1
     # via -r core_requirements.in
@@ -14,5 +14,5 @@ python-docx==1.1.2
     # via -r core_requirements.in
 typing-extensions==4.12.2
     # via python-docx
-win32-setctime==1.1.0
+win32-setctime==1.2.0
     # via loguru
