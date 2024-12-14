@@ -1,6 +1,7 @@
 -c core_requirements.txt
 
 black
+build
 isort
 jupyterlab
 jupyterlab-code-formatter

@@ -26,6 +26,8 @@ black==24.10.0
     # via -r dev_requirements.in
 bleach==6.2.0
     # via nbconvert
+build==1.2.2.post1
+    # via -r dev_requirements.in
 certifi==2024.8.30
     # via
     #   httpcore
@@ -40,6 +42,7 @@ click==8.1.7
 colorama==0.4.6
     # via
     #   -c core_requirements.txt
+    #   build
     #   click
     #   ipython
 comm==0.2.2
@@ -180,6 +183,7 @@ overrides==7.7.0
 packaging==24.2
     # via
     #   black
+    #   build
     #   ipykernel
     #   jupyter-server
     #   jupyterlab
@@ -215,6 +219,8 @@ pygments==2.18.0
     #   nbconvert
     #   readme-renderer
     #   rich
+pyproject-hooks==1.2.0
+    # via build
 python-dateutil==2.9.0.post0
     # via
     #   arrow

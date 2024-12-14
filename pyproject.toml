@@ -61,7 +61,7 @@ line_length = 80
 [project]
 name = "textspitter"
 # dynamic = ["version"]
-version = '0.3.7b1'
+version = '0.3.7b2'
 authors = [
   { name="Francis Secada", email="francis.secada@gmail.com" },
 ]
@@ -101,6 +101,7 @@ Issues = "https://github.com/fsecada01/TextSpitter/issues"
 [dependency-groups]
 dev = [
     "black>=24.10.0",
+    "build>=1.2.2.post1",
     "isort>=5.13.2",
     "jupyterlab>=4.3.1",
     "jupyterlab-code-formatter>=3.0.2",
