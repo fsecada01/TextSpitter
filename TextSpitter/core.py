@@ -2,6 +2,8 @@
 Core application that contains the `FileExtractor` class object
 """
 
+import csv
+import io
 import mimetypes
 from io import BytesIO
 from pathlib import Path
@@ -19,6 +21,7 @@ class FileExtractor:
         self,
         file_obj: str | Path | None | IO = None,
         filename: str | None = None,
+        file_attr: str = "name",
     ):
         """
         The extractor wrapper will initialize by assigning the filename to the
@@ -45,7 +48,9 @@ class FileExtractor:
             ):
                 pass
 
-            if hasattr(file_obj, "name"):
+            if hasattr(file_obj, file_attr) and isinstance(
+                getattr(file_obj, file_attr), str
+            ):
                 self.file = file_obj
                 self.file_ext = file_obj.name.split(".")[-1]
                 self.file_name = file_obj.name
@@ -137,3 +142,20 @@ class FileExtractor:
         """
         with self.file.open() as f:
             return f.read()
+
+    def csv_file_read(self):
+        """
+        Reads contents from a CSV file, and returns the string value
+
+        Returns:
+            str
+        """
+        with self.file.open() as f:
+            contents = f.read()
+
+        csv_reader = csv.reader(contents, delimiter=",")
+        str_buffer = io.StringIO()
+        csv_writer = csv.writer(str_buffer)
+        [csv_writer.writerow(row) for row in csv_reader]
+
+        return str_buffer.getvalue()

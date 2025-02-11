@@ -22,8 +22,11 @@ class WordLoader:
         self,
         file_obj: str | Path | IO | None = None,
         filename: str | None = None,
+        file_attr: str = "name",
     ):
-        self.file = FileExtractor(file_obj, filename)
+        self.file = FileExtractor(
+            file_obj=file_obj, filename=filename, file_attr=file_attr
+        )
 
     def file_load(self):
         """
@@ -38,16 +41,15 @@ class WordLoader:
         # file_type = file_loc.split('.')[-1]
 
         # file_types_tup = ('pdf', 'docx', 'doc', 'txt', 'text')
-        file_types_tup = ("pdf", "docx", "txt", "text")
-        if file_type in file_types_tup:
-            if file_type == file_types_tup[0]:
-                text = self.file.pdf_file_read()
-            elif file_type == file_types_tup[1]:
-                text = self.file.docx_file_read()
-            # elif file_type == file_types_tup[2]:
-            #     text = DocFileRead(self.text)
-            else:
-                text = self.file.text_file_read()
+        file_ext_matrix = {
+            "pdf": "pdf_file_read",
+            "docx": "docx_file_read",
+            "txt": "text_file_read",
+            "text": "text_file_read",
+            "csv": "csv_file_read",
+        }
+        if file_type in file_ext_matrix:
+            text = getattr(self.file, file_ext_matrix[file_type])()
             return text
         else:
             mime_type = self.file.get_file_type(self.file.file.name)
