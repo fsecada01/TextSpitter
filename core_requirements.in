@@ -2,3 +2,4 @@ loguru
 PyMuPDF
 PyPDF2
 python-docx
+pytest
