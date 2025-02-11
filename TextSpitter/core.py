@@ -7,6 +7,7 @@ import io
 import mimetypes
 from io import BytesIO
 from pathlib import Path
+from tempfile import SpooledTemporaryFile
 from typing import IO
 
 from docx import Document
@@ -65,19 +66,19 @@ class FileExtractor:
                 )
 
     @staticmethod
-    def get_file_type(file: str | Path):
+    def get_file_type(file_name_or_path: str | Path):
         """
         A static method that guesses the mime type for a given file object.
         The return value is taken from the sliced value from
         `mimetypes.guess_type`
         Args:
-            file: str
+            file_name_or_path: str
 
         Returns:
             str
 
         """
-        mime_type = mimetypes.guess_type(file)[0]
+        mime_type = mimetypes.guess_type(file_name_or_path)[0]
         return mime_type.split("/")[1]
 
     def get_contents(self):
@@ -93,8 +94,15 @@ class FileExtractor:
             else self.get_file_type(self.file_name)
         )
         open_mode = "r" if "text" in mime_type else "rb"
-        with self.file.open(open_mode) as f:
-            return f.read()
+        if any(
+            [isinstance(self.file, x) for x in (SpooledTemporaryFile, BytesIO)]
+        ):
+            with self.file as f:
+                content = f.read()
+        else:
+            with self.file.open(open_mode) as f:
+                content = f.read()
+        return content
 
     def pdf_file_read(self):
         """
