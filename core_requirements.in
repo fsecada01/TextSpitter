@@ -3,3 +3,4 @@ PyMuPDF
 PyPDF2
 python-docx
 pytest
+pytest-lazy-fixtures

@@ -83,6 +83,8 @@ dependencies = [
     "pymupdf==1.25.3",
     "pypdf2==3.0.1",
     "pytest==8.3.4",
+    "pytest-lazy-fixture==0.6.3",
+    "pytest-lazy-fixtures==1.1.2",
     "python-docx==1.1.2",
     "typing-extensions==4.12.2",
     "win32-setctime==1.2.0",

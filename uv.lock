@@ -1521,6 +1521,30 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-lazy-fixture"
+version = "0.6.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b2/82/ae6d2f6903719c4ec410dcd31ee24e3bce74b2cef3c5b9150ad36e8594b6/pytest-lazy-fixture-0.6.3.tar.gz", hash = "sha256:0e7d0c7f74ba33e6e80905e9bfd81f9d15ef9a790de97993e34213deb5ad10ac", size = 7878 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/a1/2f2c1c2353350d66c4d110d283e422e4943eb5ad10effa9357ba66f7b5b9/pytest_lazy_fixture-0.6.3-py3-none-any.whl", hash = "sha256:e0b379f38299ff27a653f03eaa69b08a6fd4484e46fd1c9907d984b9f9daeda6", size = 4948 },
+]
+
+[[package]]
+name = "pytest-lazy-fixtures"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/11/b9/81537997a5f887f8b9a379df0925ca53d7718bcbb7d1c754bd9699499ec4/pytest_lazy_fixtures-1.1.2.tar.gz", hash = "sha256:14ba4154dab52066c1c4d6547cc40bbf60726445cb16f1d2dcc9485cdf38964d", size = 7231 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f8/c8/280dac9595059c3703f6c0aff7bfd7f0c6b39cdafd437bf3c37047193d6a/pytest_lazy_fixtures-1.1.2-py3-none-any.whl", hash = "sha256:e04c164d2caa5a6b9c846fa7559aad2ce0980a944daf4b75579f39920ae961e4", size = 7012 },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -2060,6 +2084,8 @@ dependencies = [
     { name = "pymupdf" },
     { name = "pypdf2" },
     { name = "pytest" },
+    { name = "pytest-lazy-fixture" },
+    { name = "pytest-lazy-fixtures" },
     { name = "python-docx" },
     { name = "typing-extensions" },
     { name = "win32-setctime" },
@@ -2087,6 +2113,8 @@ requires-dist = [
     { name = "pymupdf", specifier = "==1.25.3" },
     { name = "pypdf2", specifier = "==3.0.1" },
     { name = "pytest", specifier = "==8.3.4" },
+    { name = "pytest-lazy-fixture", specifier = "==0.6.3" },
+    { name = "pytest-lazy-fixtures", specifier = "==1.1.2" },
     { name = "python-docx", specifier = "==1.1.2" },
     { name = "typing-extensions", specifier = "==4.12.2" },
     { name = "win32-setctime", specifier = "==1.2.0" },

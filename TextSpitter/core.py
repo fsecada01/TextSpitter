@@ -2,8 +2,6 @@
 Core application that contains the `FileExtractor` class object
 """
 
-import csv
-import io
 import mimetypes
 from io import BytesIO
 from pathlib import Path
@@ -52,8 +50,9 @@ class FileExtractor:
                 getattr(file_obj, file_attr), str
             ):
                 self.file = file_obj
-                self.file_ext = getattr(file_obj, file_attr).split(".")[-1]
-                self.file_name = getattr(file_obj, file_attr)
+                f_name = getattr(file_obj, file_attr)
+                self.file_ext = f_name.split(".")[-1]
+                self.file_name = f_name
             elif filename:
                 self.file = file_obj
                 self.file_ext = filename.split(".")[-1]
@@ -95,7 +94,10 @@ class FileExtractor:
         )
         open_mode = "r" if "text" in mime_type else "rb"
         if any(
-            [isinstance(self.file, x) for x in (SpooledTemporaryFile, BytesIO)]
+            [
+                isinstance(self.file, x)
+                for x in (SpooledTemporaryFile, BytesIO, bytes)
+            ]
         ):
             with self.file as f:
                 content = f.read()
@@ -151,22 +153,34 @@ class FileExtractor:
         Returns:
             str
         """
-        with self.file.open() as f:
-            return f.read()
+        if any(
+            [isinstance(self.file, x) for x in (SpooledTemporaryFile, BytesIO)]
+        ):
+            return self.file.read().decode("utf-8")
+        else:
+            with self.file.open() as f:
+                return f.read()
 
-    def csv_file_read(self):
+    def csv_file_read(self, newline: str | None = None):
         """
         Reads contents from a CSV file, and returns the string value
 
         Returns:
             str
         """
-        with self.file.open() as f:
-            contents = f.read()
+        if any(
+            [isinstance(self.file, x) for x in (SpooledTemporaryFile, BytesIO)]
+        ):
+            contents = self.file.read().decode("utf-8")
+        else:
+            with self.file.open(newline=newline) as f:
+                contents = f.read()
 
-        csv_reader = csv.reader(contents, delimiter=",")
-        str_buffer = io.StringIO()
-        csv_writer = csv.writer(str_buffer)
-        [csv_writer.writerow(row) for row in csv_reader]
+        # csv_reader = csv.reader(contents, delimiter=",")
+        # str_buffer = io.StringIO(newline=newline)
+        # csv_writer = csv.writer(str_buffer)
+        # [csv_writer.writerow(row) for row in csv_reader]
+        #
+        # return str_buffer.getvalue()
 
-        return str_buffer.getvalue()
+        return contents
