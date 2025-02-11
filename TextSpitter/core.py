@@ -52,8 +52,8 @@ class FileExtractor:
                 getattr(file_obj, file_attr), str
             ):
                 self.file = file_obj
-                self.file_ext = file_obj.name.split(".")[-1]
-                self.file_name = file_obj.name
+                self.file_ext = getattr(file_obj, file_attr).split(".")[-1]
+                self.file_name = getattr(file_obj, file_attr)
             else:
                 raise Exception(
                     "Your file object does not contain a name attribute. Please"
