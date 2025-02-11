@@ -61,7 +61,7 @@ line_length = 80
 [project]
 name = "textspitter"
 # dynamic = ["version"]
-version = '0.3.7b2'
+version = '0.3.7rc1'
 authors = [
   { name="Francis Secada", email="francis.secada@gmail.com" },
 ]
