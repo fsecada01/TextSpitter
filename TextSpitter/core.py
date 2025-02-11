@@ -28,14 +28,18 @@ class FileExtractor:
         object's file property; if a file-like object is provided instead of a
         name, then a file_ext arg will be required.
 
-        `filename` is depreciated.
+        `filename` is now a fallback for `file_obj.name` if `file_obj` is a
+        type without a `name` attribute (e.g.: SpooledTemporaryFile). In this
+        instance, the `filename` is used to determine the file extension and
+        should not be a fully qualified path.
 
         Args:
             file_obj: str | Path | None
             filename: : str | None
+            file_attr: str
         """
 
-        if filename:
+        if filename and not file_obj:
             self.file = Path(filename)
             self.file_ext = filename.split(".")[-1]
             self.file_name = self.file.name
@@ -43,17 +47,16 @@ class FileExtractor:
             if isinstance(file_obj, str):
                 file_obj = Path(file_obj)
 
-            elif file_obj and any(
-                (isinstance(file_obj, x) for x in (Path, IO))
-            ):
-                pass
-
             if hasattr(file_obj, file_attr) and isinstance(
                 getattr(file_obj, file_attr), str
             ):
                 self.file = file_obj
                 self.file_ext = getattr(file_obj, file_attr).split(".")[-1]
                 self.file_name = getattr(file_obj, file_attr)
+            elif filename:
+                self.file = file_obj
+                self.file_ext = filename.split(".")[-1]
+                self.file_name = filename
             else:
                 raise Exception(
                     "Your file object does not contain a name attribute. Please"
