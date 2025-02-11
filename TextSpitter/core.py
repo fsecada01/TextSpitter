@@ -110,7 +110,7 @@ class FileExtractor:
         """
         This current code provides a workaround in case MuPDF (a dependency
         for PyMuPDF) is not usable in the development environment. For such
-        instances, the module relies on PyPDF2 to extract text data. However,
+        instances, the module relies on PyPDF to extract text data. However,
         because of the likelihood of white spaces being rampant in the
         extracted string data, those characters get filtered out.
         """
@@ -118,17 +118,17 @@ class FileExtractor:
         contents = self.get_contents()
 
         try:
-            import fitz
+            import pymupdf
 
-            pdf_file = fitz.Document(stream=contents, filetype="pdf")
-            raw_text = [ele.get_text("text") for ele in pdf_file]
+            pdf_file = pymupdf.Document(stream=contents, filetype="pdf")
+            raw_text = [ele.get_text("text") for ele in pdf_file]  # noqa
             text = "".join(raw_text)
         # else:
         except Exception:
-            import PyPDF2
+            import pypdf
 
-            pdf_reader = PyPDF2.PdfFileReader(contents)
-            raw_text = [ele.extractText() for ele in pdf_reader.pages]
+            pdf_reader = pypdf.PdfReader(contents)
+            raw_text = [ele.extract_text() for ele in pdf_reader.pages]
             text = "".join(raw_text)
         return text
 

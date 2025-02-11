@@ -1,6 +1,6 @@
 loguru
 PyMuPDF
-PyPDF2
+pypdf
 python-docx
 pytest
 pytest-lazy-fixtures
