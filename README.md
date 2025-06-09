@@ -31,7 +31,7 @@ return text
 ## TO DOs ##
 * [x] spruce up documentation
 * [X] Add stream functionality for s3-based file reading
-* [ ] expand functionality to other file types
+* [x] expand functionality to other file types (e.g., code files, improved CSV handling)
 * [ ] TDB
 
 ## WANT TO CONTRIBUTE!? ##

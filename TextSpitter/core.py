@@ -2,18 +2,26 @@
 Core application that contains the `FileExtractor` class object
 """
 
-# It's good practice to have a logger instance if you use it
 import logging
 import mimetypes
-from io import BytesIO  # Ensure BytesIO is imported from io
+from io import BytesIO
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
 from typing import IO
 
 from docx import Document
 
-# from loguru import logger # Assuming logger is configured if used
+# --- Module-level imports for optional PDF libraries ---
+try:
+    import pymupdf  # type: ignore
+except ImportError:
+    pymupdf = None  # Will be None if not installed
 
+try:
+    import pypdf  # type: ignore
+except ImportError:
+    pypdf = None  # Will be None if not installed
+# --- End of module-level imports ---
 
 logger = logging.getLogger(__name__)
 
@@ -133,10 +141,108 @@ class FileExtractor:
             "pdf": "pdf",
             "txt": "plain",
             "csv": "csv",
+            # Add programming language mappings
+            "py": "x-python",
+            "js": "javascript",
+            "java": "x-java-source",
+            "c": "x-c",
+            "cpp": "x-c++",
+            "html": "html",
+            "css": "css",
+            "json": "json",
+            "xml": "xml",
         }
         return ext_to_mime_subtype.get(
             ext, "octet-stream"
         )  # Default to octet-stream
+
+    @staticmethod
+    def is_programming_language_file(file_ext: str) -> bool:
+        """
+        Check if the file extension corresponds to a programming language file.
+
+        Args:
+            file_ext: File extension (without dot)
+
+        Returns:
+            bool: True if it's a programming language file
+        """
+        programming_extensions = {
+            "py",
+            "js",
+            "ts",
+            "java",
+            "cpp",
+            "c",
+            "h",
+            "hpp",
+            "cs",
+            "php",
+            "rb",
+            "go",
+            "rs",
+            "swift",
+            "kt",
+            "scala",
+            "r",
+            "sql",
+            "sh",
+            "bash",
+            "zsh",
+            "ps1",
+            "bat",
+            "cmd",
+            "html",
+            "htm",
+            "css",
+            "scss",
+            "sass",
+            "less",
+            "xml",
+            "json",
+            "yaml",
+            "yml",
+            "toml",
+            "ini",
+            "cfg",
+            "conf",
+            "md",
+            "rst",
+            "tex",
+            "latex",
+            "vue",
+            "jsx",
+            "tsx",
+            "dart",
+            "pl",
+            "pm",
+            "lua",
+            "vim",
+            "asm",
+            "s",
+            "f",
+            "f90",
+            "f95",
+            "cob",
+            "cobol",
+            "pas",
+            "pp",
+            "ml",
+            "fs",
+            "fsx",
+            "elm",
+            "clj",
+            "cljs",
+            "ex",
+            "exs",
+            "erl",
+            "hrl",
+            "jl",
+            "nim",
+            "cr",
+            "zig",
+        }
+        return file_ext.lower() in programming_extensions
 
     def get_contents(self) -> bytes:
         """
@@ -194,6 +300,36 @@ class FileExtractor:
                 f"nor is it a Path or bytes."
             )
 
+    def code_file_read(self) -> str:
+        """
+        Reads contents from programming language files (.py, .js, .java, etc.)
+        with enhanced encoding detection and preserves original formatting.
+
+        Returns:
+            str: The file content as a string
+        """
+        contents_bytes = self.get_contents()
+
+        # Common encodings for source code files
+        encodings_to_try = ["utf-8", "utf-8-sig", "latin-1", "cp1252"]
+
+        for encoding in encodings_to_try:
+            try:
+                content = contents_bytes.decode(encoding)
+                logger.info(
+                    f"Successfully decoded {self.file_name} using {encoding}"
+                )
+                return content
+            except UnicodeDecodeError:
+                continue
+
+        # If all encodings fail, use utf-8 with replacement
+        logger.warning(
+            f"Could not decode code file {self.file_name} with standard "
+            f"encodings, using utf-8 with replacement characters."
+        )
+        return contents_bytes.decode("utf-8", errors="replace")
+
     def pdf_file_read(self) -> str:  # Added return type hint
         """
         This current code provides a workaround in case MuPDF (a dependency
@@ -203,9 +339,13 @@ class FileExtractor:
         extracted string data, those characters get filtered out.
         """
         contents = self.get_contents()  # This should now reliably return bytes
+        text = ""  # Default to empty string
 
         try:
-            import pymupdf  # type: ignore
+            if not pymupdf:  # Check if module-level import was successful
+                raise ImportError(
+                    "pymupdf module not available or import failed."
+                )
 
             # PyMuPDF's Document constructor can take bytes directly via the
             # 'stream' argument
@@ -220,7 +360,10 @@ class FileExtractor:
                 f" {self.file_name}"
             )
             try:
-                import pypdf  # type: ignore
+                if not pypdf:  # Check if module-level import was successful
+                    raise ImportError(
+                        "pypdf module not available or import failed."
+                    )
 
                 # PyPDF2 needs a stream, so wrap bytes in BytesIO
                 pdf_stream = BytesIO(contents)
@@ -228,7 +371,7 @@ class FileExtractor:
                 raw_text = [
                     page.extract_text()
                     for page in pdf_reader.pages
-                    if page.extract_text()
+                    if page.extract_text()  # Ensure text is not None or empty
                 ]
                 text = "".join(raw_text)
             except Exception as e_pypdf:
@@ -236,7 +379,7 @@ class FileExtractor:
                     f"Both PyMuPDF and PyPDF2 failed for PDF "
                     f"{self.file_name}: {e_pypdf}"
                 )
-                text = ""  # Return empty string on failure
+                # text remains "" as initialized
         return text
 
     def docx_file_read(self) -> str:  # Added return type hint

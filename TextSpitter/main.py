@@ -37,10 +37,9 @@ class WordLoader:
         Returns:
             str
         """
-        file_type = self.file.file_ext
-        # file_type = file_loc.split('.')[-1]
+        file_type = self.file.file_ext.lower()
 
-        # file_types_tup = ('pdf', 'docx', 'doc', 'txt', 'text')
+        # Primary file extension mapping
         file_ext_matrix = {
             "pdf": "pdf_file_read",
             "docx": "docx_file_read",
@@ -48,15 +47,51 @@ class WordLoader:
             "text": "text_file_read",
             "csv": "csv_file_read",
         }
+
+        # Check if it's a specific supported format first
         if file_type in file_ext_matrix:
             text = getattr(self.file, file_ext_matrix[file_type])()
             return text
+        # Check if it's a programming language file
+        elif self.file.is_programming_language_file(file_type):
+            logger.info(
+                f"Processing programming language file: {self.file.file_name}"
+            )
+            text = self.file.code_file_read()
+            return text
         else:
-            mime_type = self.file.get_file_type(self.file.file.name)
+            # Fall back to mime type detection
+            mime_type = self.file.get_file_type(self.file.file_name)
+
+            # Check if mime type suggests it's a text-based file
+            text_mime_types = [
+                "plain",
+                "javascript",
+                "x-python",
+                "x-c",
+                "x-java-source",
+                "x-c++",
+                "html",
+                "css",
+                "json",
+                "xml",
+            ]
+
+            if mime_type in text_mime_types:
+                logger.info(
+                    f"Processing text-based file by mime type: {mime_type}"
+                )
+                text = (
+                    self.file.code_file_read()
+                )  # Use code_file_read for better encoding handling
+                return text
 
             logger.error(
                 f"You are using an incorrect file format for file submissions. "
-                f"Please upload a .docx/.doc/.txt/.pdf file OR! Note the "
-                f"mimetype of your submitted data and submit an error report "
-                f"to github with the following: {mime_type}"
+                f"Please upload a .docx/.doc/.txt/.pdf file or a supported "
+                f"programming language file (.py, .js, .java, .cpp, etc.). "
+                f"Note the mimetype of your submitted data and submit an "
+                f"error report to github with the following: {mime_type}"
             )
+
+            return ""

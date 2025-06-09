@@ -24,7 +24,10 @@ pytest==8.4.0
     # via
     #   -r core_requirements.in
     #   pytest-lazy-fixtures
+    #   pytest-mock
 pytest-lazy-fixtures==1.1.4
+    # via -r core_requirements.in
+pytest-mock==3.14.1
     # via -r core_requirements.in
 python-docx==1.1.2
     # via -r core_requirements.in

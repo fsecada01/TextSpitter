@@ -61,7 +61,7 @@ line_length = 80
 [project]
 name = "textspitter"
 # dynamic = ["version"]
-version = '0.3.8'
+version = '0.4.0b0'
 authors = [
   { name="Francis Secada", email="francis.secada@gmail.com" },
 ]
@@ -74,14 +74,22 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "loguru>=0.7.3",
-    "pymupdf>=1.26.0",
-    "pypdf>=5.6.0",
-    "pytest>=8.4.0",
-    "pytest-lazy-fixtures>=1.1.4",
-    "python-docx>=1.1.2",
+    "colorama==0.4.6",
+    "iniconfig==2.1.0",
+    "loguru==0.7.3",
+    "lxml==5.4.0",
+    "packaging==25.0",
+    "pluggy==1.6.0",
+    "pygments==2.19.1",
+    "pymupdf==1.26.0",
+    "pypdf==5.6.0",
+    "pytest==8.4.0",
+    "pytest-lazy-fixtures==1.1.4",
+    "pytest-mock==3.14.1",
+    "python-docx==1.1.2",
+    "typing-extensions==4.14.0",
+    "win32-setctime==1.2.0",
 ]
-
 
 
 [tool.setuptools]
@@ -99,11 +107,11 @@ Issues = "https://github.com/fsecada01/TextSpitter/issues"
 
 [dependency-groups]
 dev = [
-    "black>=24.10.0",
+    "black>=25.1.0",
     "build>=1.2.2.post1",
-    "isort>=5.13.2",
-    "jupyterlab>=4.3.1",
+    "isort>=6.0.1",
+    "jupyterlab>=4.4.3",
     "jupyterlab-code-formatter>=3.0.2",
-    "ruff>=0.8.0",
-    "twine>=5.1.1",
+    "ruff>=0.11.13",
+    "twine>=6.1.0",
 ]

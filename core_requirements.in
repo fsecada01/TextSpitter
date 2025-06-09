@@ -4,3 +4,4 @@ pypdf
 python-docx
 pytest
 pytest-lazy-fixtures
+pytest-mock
