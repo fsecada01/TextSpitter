@@ -74,10 +74,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "loguru>=0.7.3",
-    "pymupdf>=1.26.0",
-    "pypdf>=5.6.0",
-    "python-docx>=1.1.2",
+    "loguru",
+    "pymupdf",
+    "pypdf",
+    "python-docx",
 ]
 
 
@@ -96,16 +96,16 @@ Issues = "https://github.com/fsecada01/TextSpitter/issues"
 
 [dependency-groups]
 dev = [
-    "black>=25.1.0",
-    "build>=1.2.2.post1",
-    "isort>=6.0.1",
-    "jupyterlab>=4.4.3",
-    "jupyterlab-code-formatter>=3.0.2",
-    "pytest>=8.4.0",
-    "pytest-lazy-fixtures>=1.1.4",
-    "pytest-mock>=3.14.1",
-    "ruff>=0.11.13",
-    "twine>=6.1.0",
+    "black",
+    "build",
+    "isort",
+    "jupyterlab",
+    "jupyterlab-code-formatter",
+    "pytest",
+    "pytest-lazy-fixtures",
+    "pytest-mock",
+    "ruff",
+    "twine",
 ]
 
 
