@@ -45,6 +45,7 @@ colorama==0.4.6
     #   build
     #   click
     #   ipython
+    #   pytest
 comm==0.2.2
     # via ipykernel
 debugpy==1.8.14
@@ -75,6 +76,8 @@ idna==3.10
     #   httpx
     #   jsonschema
     #   requests
+iniconfig==2.1.0
+    # via pytest
 ipykernel==6.29.5
     # via jupyterlab
 ipython==9.3.0
@@ -186,7 +189,6 @@ overrides==7.7.0
     # via jupyter-server
 packaging==25.0
     # via
-    #   -c core_requirements.txt
     #   black
     #   build
     #   ipykernel
@@ -196,6 +198,7 @@ packaging==25.0
     #   jupyterlab-code-formatter
     #   jupyterlab-server
     #   nbconvert
+    #   pytest
     #   twine
 pandocfilters==1.5.1
     # via nbconvert
@@ -207,6 +210,8 @@ platformdirs==4.3.8
     # via
     #   black
     #   jupyter-core
+pluggy==1.6.0
+    # via pytest
 prometheus-client==0.22.1
     # via jupyter-server
 prompt-toolkit==3.0.51
@@ -219,14 +224,23 @@ pycparser==2.22
     # via cffi
 pygments==2.19.1
     # via
-    #   -c core_requirements.txt
     #   ipython
     #   ipython-pygments-lexers
     #   nbconvert
+    #   pytest
     #   readme-renderer
     #   rich
 pyproject-hooks==1.2.0
     # via build
+pytest==8.4.0
+    # via
+    #   -r dev_requirements.in
+    #   pytest-lazy-fixtures
+    #   pytest-mock
+pytest-lazy-fixtures==1.1.4
+    # via -r dev_requirements.in
+pytest-mock==3.14.1
+    # via -r dev_requirements.in
 python-dateutil==2.9.0.post0
     # via
     #   arrow
