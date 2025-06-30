@@ -270,7 +270,7 @@ uv run python {entrypoint}
 
 ### Testing
 
-Textspitter.git uses the {__test_framework__} test framework. Run the test suite with:
+Textspitter.git uses the pytest test framework. Run the test suite with:
 
 **Using [pip](https://pypi.org/project/pip/):**
 ```sh
@@ -288,7 +288,7 @@ uv run pytest tests/
 * [x] spruce up documentation
 * [X] Add stream functionality for s3-based file reading
 * [x] expand functionality to other file types (e.g., code files, improved CSV handling)
-* [ ] TDB
+* [x] TDB
 
 ---
 
