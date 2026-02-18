@@ -30,7 +30,8 @@
       "Bash(git -C:*)",
       "Bash(uv:*)",
       "Bash(.venv/Scripts/ty.exe check:*)",
-      "Bash(\".venv/Scripts/ty.exe\" --version)"
+      "Bash(\".venv/Scripts/ty.exe\" --version)",
+      "WebFetch(domain:fsecada01.github.io)"
     ]
   }
 }

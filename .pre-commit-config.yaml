@@ -3,7 +3,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-added-large-files
-        exclude: bin/
+        exclude: bin/|docs/
       - id: check-ast
       - id: check-builtin-literals
       - id: check-byte-order-marker
@@ -13,30 +13,33 @@ repos:
       - id: check-json
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
+        exclude: docs/
       - id: check-symlinks
       - id: check-toml
       - id: check-vcs-permalinks
       - id: check-xml
       - id: check-yaml
       - id: debug-statements
-        exclude: tests/
+        exclude: tests/|docs/
       - id: destroyed-symlinks
       - id: detect-aws-credentials
         args: [ --allow-missing-credentials ]
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: tests/test_changes/
+        exclude: tests/test_changes/|docs/
         files: \.(py|sh|rst|yml|yaml)$
       - id: pretty-format-json
         args: [ --autofix ]
       - id: sort-simple-yaml
       - id: trailing-whitespace
+        exclude: docs/
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
     rev: "v0.8.0"
     hooks:
       - id: ruff
+        exclude: docs/
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
@@ -48,7 +51,7 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
-        exclude: tests/
+        exclude: tests/|docs/
 
   - repo: local
     hooks:

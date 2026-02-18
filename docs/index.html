@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextSpitter - Document Text Extraction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        main {
+            padding: 3rem 2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #667eea;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .guides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .guide-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-left: 4px solid #667eea;
+        }
+
+        .guide-card h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-card .description {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .formats-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .formats-table th {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .formats-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .formats-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .code-block code {
+            font-family: "Courier New", monospace;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .features-grid,
+            .guides-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>TextSpitter</h1>
+            <p>Transform documents into insights, effortlessly and efficiently.</p>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h2>Extract text from any document format</h2>
+            <p>A lightweight Python library for extracting text from PDFs, DOCX, TXT, CSV, and 50+ source code file types. Supports file paths, streams, and raw bytes.</p>
+            <div class="cta-buttons">
+                <a href="#quick-start" class="btn btn-primary">Get Started</a>
+                <a href="TextSpitter.html" class="btn btn-secondary">API Reference →</a>
+            </div>
+            <div class="badges">
+                <span class="badge">📦 PyPI Package</span>
+                <span class="badge">🐍 Python 3.12+</span>
+                <span class="badge">✨ Type Hints</span>
+                <span class="badge">📚 Documented</span>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="container">
+            <!-- Features -->
+            <section>
+                <h2>✨ Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>📄 Multi-Format Support</h3>
+                        <p>PDF (PyMuPDF + PyPDF fallback), DOCX, TXT, CSV, and 50+ programming language file types.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔌 Stream-First API</h3>
+                        <p>Accepts file paths, BytesIO, SpooledTemporaryFile, or raw bytes. No temporary files required.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🛠️ Optional Logging</h3>
+                        <p>Built-in loguru support with automatic fallback to stdlib logging. Install with <code>textspitter[logging]</code>.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🖥️ CLI Included</h3>
+                        <p>Use <code>uv tool install textspitter</code> for a command-line tool. Perfect for quick extractions.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🚀 CI/CD Ready</h3>
+                        <p>Automated testing across Python 3.12–3.14 with GitHub Actions. Published to PyPI automatically.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🧪 Well Tested</h3>
+                        <p>~80 pytest tests covering all readers, input types, and edge cases. 89%+ code coverage.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Supported Formats -->
+            <section>
+                <h2>📋 Supported Formats</h2>
+                <table class="formats-table">
+                    <thead>
+                        <tr>
+                            <th>Format</th>
+                            <th>Method</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PDF</strong></td>
+                            <td><code>pdf_file_read()</code></td>
+                            <td>PyMuPDF → PyPDF fallback for compatibility</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DOCX</strong></td>
+                            <td><code>docx_file_read()</code></td>
+                            <td>python-docx paragraph extraction</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TXT</strong></td>
+                            <td><code>text_file_read()</code></td>
+                            <td>UTF-8 → latin-1 → UTF-8-replace encoding cascade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSV</strong></td>
+                            <td><code>csv_file_read()</code></td>
+                            <td>Same encoding cascade as TXT</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Source Code</strong></td>
+                            <td><code>code_file_read()</code></td>
+                            <td>50+ extensions (py, js, ts, go, rs, java, ruby, php, …)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Quick Start -->
+            <section id="quick-start">
+                <h2>⚡ Quick Start</h2>
+
+                <h3>Install</h3>
+                <div class="code-block"><code>pip install textspitter
+
+# With optional loguru logging
+pip install "textspitter[logging]"</code></div>
+
+                <h3>Extract Text</h3>
+                <div class="code-block"><code>from TextSpitter import TextSpitter
+
+# From a file
+text = TextSpitter(filename="report.pdf")
+
+# From a stream
+from io import BytesIO
+text = TextSpitter(file_obj=BytesIO(pdf_bytes), filename="report.pdf")
+
+# From raw bytes
+text = TextSpitter(file_obj=docx_bytes, filename="contract.docx")</code></div>
+
+                <h3>Use the CLI</h3>
+                <div class="code-block"><code># Single file to stdout
+textspitter report.pdf
+
+# Multiple files to combined output
+textspitter chapter1.pdf chapter2.pdf -o book.txt</code></div>
+            </section>
+
+            <!-- Documentation -->
+            <section>
+                <h2>📚 Documentation</h2>
+                <p style="margin-bottom: 1.5rem;">Choose your path based on what you need:</p>
+                <div class="guides-grid">
+                    <a href="#" class="guide-card">
+                        <h3>🎯 Quick Start</h3>
+                        <p class="description">Install and run your first extraction in under 2 minutes.</p>
+                    </a>
+                    <a href="#" class="guide-card">
+                        <h3>🔍 Technical Overview</h3>
+                        <p class="description">Architecture, module design, and implementation details.</p>
+                    </a>
+                    <a href="#" class="guide-card">
+                        <h3>📖 Tutorial</h3>
+                        <p class="description">Format-by-format walkthrough with real examples.</p>
+                    </a>
+                    <a href="#" class="guide-card">
+                        <h3>💼 Use Cases</h3>
+                        <p class="description">FastAPI, S3, LangChain, batch processing patterns.</p>
+                    </a>
+                    <a href="#" class="guide-card">
+                        <h3>📋 Recipes</h3>
+                        <p class="description">Copy-paste snippets for common tasks.</p>
+                    </a>
+                    <a href="TextSpitter.html" class="guide-card">
+                        <h3>⚙️ API Reference</h3>
+                        <p class="description">Complete API documentation with all classes and methods.</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section>
+                <h2>❓ FAQ</h2>
+
+                <h3>Why TextSpitter?</h3>
+                <p>TextSpitter normalizes diverse input types (file paths, streams, bytes) into plain strings. It's ideal for LLM pipelines, search engines, and data-processing workflows that need clean text extraction without the complexity of framework-specific adapters.</p>
+
+                <h3>What's the difference between TextSpitter and python-docx / PyMuPDF?</h3>
+                <p>TextSpitter is a <strong>format dispatcher</strong> that handles PDF, DOCX, TXT, CSV, and source code files with a single API. It wraps libraries like PyMuPDF and python-docx, adding automatic format detection, fallback chains, and stream support. You get consistency across all formats.</p>
+
+                <h3>Does it support scanned PDFs?</h3>
+                <p>No. TextSpitter extracts <em>embedded text layers</em> only. Scanned PDFs with no text layer return an empty string. Pre-process with OCR (e.g., pytesseract) and pass the text directly if needed.</p>
+
+                <h3>How do I enable logging?</h3>
+                <p>Install with <code>pip install "textspitter[logging]"</code> to enable loguru. Without it, TextSpitter falls back to stdlib logging automatically. See the Recipes section for configuration examples.</p>
+
+                <h3>Can I use TextSpitter in async code?</h3>
+                <p>TextSpitter's main API is synchronous. For async workflows, wrap extraction in <code>asyncio.to_thread()</code> or use a thread pool executor.</p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>TextSpitter is released under the <a href="https://github.com/fsecada01/TextSpitter/blob/main/LICENSE">MIT License</a></p>
+            <p>
+                <a href="https://github.com/fsecada01/TextSpitter">GitHub</a> •
+                <a href="https://github.com/fsecada01/TextSpitter/issues">Issues</a> •
+                <a href="https://pypi.org/project/textspitter/">PyPI</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
