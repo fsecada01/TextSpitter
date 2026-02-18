@@ -6,7 +6,7 @@ to the standard library logging module.
 """
 
 try:
-    from loguru import logger
+    from loguru import logger  # type: ignore[import]
 except ImportError:
     import logging
 

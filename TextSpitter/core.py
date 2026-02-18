@@ -6,20 +6,20 @@ import mimetypes
 from io import BytesIO
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
-from typing import IO
+from typing import IO, BinaryIO, cast
 
 from docx import Document
 
 # --- Module-level imports for optional PDF libraries ---
 try:
-    import pymupdf  # type: ignore
+    import pymupdf  # type: ignore[import]
 except ImportError:
-    pymupdf = None  # Will be None if not installed
+    pymupdf = None  # type: ignore[assignment]
 
 try:
-    import pypdf  # type: ignore
+    import pypdf  # type: ignore[import]
 except ImportError:
-    pypdf = None  # Will be None if not installed
+    pypdf = None  # type: ignore[assignment]
 # --- End of module-level imports ---
 
 from .logger import logger
@@ -256,21 +256,17 @@ class FileExtractor:
             self.file, "read"
         ):  # Handles BytesIO, SpooledTemporaryFile, and other IOBase streams
             # This is a file-like object (stream)
+            readable = cast(BinaryIO, self.file)
             try:
-                self.file.seek(0)  # Rewind the stream if possible
+                readable.seek(0)  # Rewind the stream if possible
             except (
                 AttributeError,
                 ValueError,
                 IOError,
             ):  # More specific exceptions for seek issues
-                # Some streams might not support seek (e.g., if already
-                # closed or certain types)
-                # or it might not be necessary. Log if needed.
-                # logger.debug(f"Stream {type(self.file)} does not support
-                # seek or is in a state that prevents it.")
                 pass
 
-            data = self.file.read()
+            data = readable.read()
 
             if isinstance(data, str):
                 # This case should be rare if streams are handled as binary,
