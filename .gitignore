@@ -5,7 +5,6 @@ share/
 __pycache__
 labs
 .venv
-tests
 *.7z
 *.env
 *.egg*/
