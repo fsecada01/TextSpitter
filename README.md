@@ -257,15 +257,24 @@ Build TextSpitter.git from the source and intsall dependencies:
 
 ### Usage
 
-Run the project with:
+**As a library (Python API):**
+```python
+from TextSpitter import TextSpitter
 
-**Using [pip](https://pypi.org/project/pip/):**
-```sh
-python {entrypoint}
+text = TextSpitter(filename="path/to/document.pdf")
+print(text)
 ```
-**Using [uv](https://docs.astral.sh/uv/):**
+
+**As a CLI tool:**
 ```sh
-uv run python {entrypoint}
+# Install globally
+uv tool install textspitter
+
+# Extract text to stdout
+textspitter path/to/document.pdf
+
+# Multiple files, write to output file
+textspitter file1.pdf file2.docx -o combined.txt
 ```
 
 ### Testing

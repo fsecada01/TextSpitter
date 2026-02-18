@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [tool.ruff]
 fix = true
 exclude = [
@@ -51,17 +55,14 @@ extend-exclude = '''
   | profiling
 )/
 '''
+
 [tool.isort]
 profile = "black"
 line_length = 80
-#multi_line_output = 3
-#include_trailing_comma = true
-#force_grid_wrap = 0
 
 [project]
 name = "textspitter"
-# dynamic = ["version"]
-version = '0.4.0'
+version = "0.4.0"
 authors = [
   { name="Francis Secada", email="francis.secada@gmail.com" },
 ]
@@ -74,25 +75,27 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "loguru",
     "pymupdf",
     "pypdf",
     "python-docx",
 ]
 
+[project.optional-dependencies]
+logging = ["loguru"]
 
-[tool.setuptools]
-# py-modules = ["TextSpitter"]
-packages = ["TextSpitter"]
-#package-dir = {"" = "TextSpitter"}
-
-# [tool.setuptools.dynamic]
-# version = {attr = "TextSpitter.__version__"}
-# readme = {file = ['README.md']}
+[project.scripts]
+textspitter = "TextSpitter.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/fsecada01/TextSpitter"
 Issues = "https://github.com/fsecada01/TextSpitter/issues"
+
+[tool.setuptools]
+packages = ["TextSpitter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short"
 
 [dependency-groups]
 dev = [
@@ -101,11 +104,12 @@ dev = [
     "isort",
     "jupyterlab",
     "jupyterlab-code-formatter",
+    "pdoc",
+    "prek",
     "pytest",
+    "pytest-cov",
     "pytest-lazy-fixtures",
     "pytest-mock",
     "ruff",
     "twine",
 ]
-
-

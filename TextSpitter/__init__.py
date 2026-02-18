@@ -1,28 +1,32 @@
 """
-Doc string
+TextSpitter — a text-extraction library that facilitates string consumption.
 """
 
-import os
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = os.environ.get("VERSION", "0.3.7rc4")
+try:
+    __version__ = version("textspitter")
+except PackageNotFoundError:
+    __version__ = "unknown"
 
 from .main import WordLoader
-
-name = "TextSpitter"
 
 
 def TextSpitter(
     file_obj=None, filename: str | None = None, file_attr: str = "name"
 ):
     """
-    The main function that returns text contents from `WordLoader`
+    Extract text from a file and return it as a string.
+
     Args:
-        file_obj:
-        filename: str | None
-        file_attr: str
+        file_obj: A file path (str/Path), file-like object, bytes, or None.
+        filename: Filename with extension. Used when file_obj has no name
+                  attribute, or as the sole argument for path-based loading.
+        file_attr: Attribute name to read from file_obj for its filename.
+                   Defaults to "name".
 
     Returns:
-
+        str: Extracted text content.
     """
     return WordLoader(
         file_obj=file_obj, filename=filename, file_attr=file_attr

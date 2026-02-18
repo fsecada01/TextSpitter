@@ -18,6 +18,29 @@ class WordLoader:
     features/enhancements to functionalities.
     """
 
+    FILE_EXT_MATRIX: dict = {
+        "pdf": "pdf_file_read",
+        "docx": "docx_file_read",
+        "txt": "text_file_read",
+        "text": "text_file_read",
+        "csv": "csv_file_read",
+    }
+
+    TEXT_MIME_TYPES: frozenset = frozenset(
+        {
+            "plain",
+            "javascript",
+            "x-python",
+            "x-c",
+            "x-java-source",
+            "x-c++",
+            "html",
+            "css",
+            "json",
+            "xml",
+        }
+    )
+
     def __init__(
         self,
         file_obj: str | Path | IO | None = None,
@@ -39,18 +62,9 @@ class WordLoader:
         """
         file_type = self.file.file_ext.lower()
 
-        # Primary file extension mapping
-        file_ext_matrix = {
-            "pdf": "pdf_file_read",
-            "docx": "docx_file_read",
-            "txt": "text_file_read",
-            "text": "text_file_read",
-            "csv": "csv_file_read",
-        }
-
         # Check if it's a specific supported format first
-        if file_type in file_ext_matrix:
-            text = getattr(self.file, file_ext_matrix[file_type])()
+        if file_type in self.FILE_EXT_MATRIX:
+            text = getattr(self.file, self.FILE_EXT_MATRIX[file_type])()
             return text
         # Check if it's a programming language file
         elif self.file.is_programming_language_file(file_type):
@@ -64,20 +78,7 @@ class WordLoader:
             mime_type = self.file.get_file_type(self.file.file_name)
 
             # Check if mime type suggests it's a text-based file
-            text_mime_types = [
-                "plain",
-                "javascript",
-                "x-python",
-                "x-c",
-                "x-java-source",
-                "x-c++",
-                "html",
-                "css",
-                "json",
-                "xml",
-            ]
-
-            if mime_type in text_mime_types:
+            if mime_type in self.TEXT_MIME_TYPES:
                 logger.info(
                     f"Processing text-based file by mime type: {mime_type}"
                 )

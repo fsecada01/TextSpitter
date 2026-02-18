@@ -1,6 +1,13 @@
 """
-This module provides logging features for the application. This is to provide
-uplift and migration away from standard "print" commands for capturing errors.
+Logging setup for TextSpitter.
+
+Uses loguru if available (install textspitter[logging]), otherwise falls back
+to the standard library logging module.
 """
 
-from loguru import logger  # noqa
+try:
+    from loguru import logger
+except ImportError:
+    import logging
+
+    logger = logging.getLogger("textspitter")  # type: ignore[assignment]

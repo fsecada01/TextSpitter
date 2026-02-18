@@ -2,7 +2,6 @@
 Core application that contains the `FileExtractor` class object
 """
 
-import logging
 import mimetypes
 from io import BytesIO
 from pathlib import Path
@@ -23,7 +22,7 @@ except ImportError:
     pypdf = None  # Will be None if not installed
 # --- End of module-level imports ---
 
-logger = logging.getLogger(__name__)
+from .logger import logger
 
 
 class FileExtractor:
@@ -31,143 +30,8 @@ class FileExtractor:
     Wrapper for extracting file contents to string
     """
 
-    def __init__(
-        self,
-        file_obj: (
-            str | Path | IO | BytesIO | SpooledTemporaryFile | bytes | None
-        ) = None,  # Expanded type hint
-        filename: str | None = None,
-        file_attr: str = "name",
-    ):
-        """
-        The extractor wrapper will initialize by assigning the filename to the
-        object's file property; if a file-like object is provided instead of a
-        name, then a file_ext arg will be required.
-
-        `filename` is now a fallback for `file_obj.name` if `file_obj` is a
-        type without a `name` attribute (e.g.: SpooledTemporaryFile). In this
-        instance, the `filename` is used to determine the file extension and
-        should not be a fully qualified path.
-
-        Args:
-            file_obj: str | Path | IO | BytesIO | SpooledTemporaryFile |
-            bytes | None
-            filename: : str | None
-            file_attr: str
-        """
-
-        if filename and not file_obj:
-            self.file = Path(filename)
-            self.file_ext = filename.split(".")[
-                -1
-            ].lower()  # Standardize extension to lowercase
-            self.file_name = self.file.name
-        elif file_obj is not None:  # Ensure file_obj is not None
-            if isinstance(file_obj, str):
-                file_obj = Path(file_obj)  # Convert string path to Path object
-
-            # Check if file_obj is a Path object or has the specified file_attr
-            if isinstance(file_obj, Path):
-                self.file = file_obj
-                self.file_name = self.file.name
-                self.file_ext = (
-                    self.file.suffix[1:].lower() if self.file.suffix else ""
-                )  # Get ext from Path
-            elif hasattr(file_obj, file_attr) and isinstance(
-                getattr(file_obj, file_attr), str
-            ):
-                self.file = file_obj
-                f_name = getattr(file_obj, file_attr)
-                self.file_name = f_name
-                self.file_ext = f_name.split(".")[-1].lower()
-            elif (
-                filename
-            ):  # Fallback to using filename if file_obj has no name attribute
-                self.file = file_obj  # This could be BytesIO,
-                # SpooledTemporaryFile, bytes
-                self.file_name = filename
-                self.file_ext = filename.split(".")[-1].lower()
-            else:
-                # If file_obj is a stream without a name and no filename is
-                # provided
-                if isinstance(file_obj, (BytesIO, SpooledTemporaryFile, bytes)):
-                    raise Exception(
-                        "A 'filename' with an extension is required when "
-                        "'file_obj' is a stream or bytes "
-                        "and does not have a usable name attribute."
-                    )
-                raise Exception(
-                    f"Your file object (type: {type(file_obj)}) does not "
-                    f"contain a usable '{file_attr}' attribute, and no "
-                    f"fallback 'filename' was provided. Please provide a "
-                    f"'filename' with an extension."
-                )
-        else:  # Neither filename nor file_obj provided
-            raise ValueError(
-                "Either 'file_obj' or 'filename' must be provided."
-            )
-
-    @staticmethod
-    def get_file_type(
-        file_name_or_path: str | Path,
-    ) -> str:  # Added return type hint
-        """
-        A static method that guesses the mime type for a given file object.
-        The return value is taken from the sliced value from
-        `mimetypes.guess_type`
-        Args:
-            file_name_or_path: str | Path
-
-        Returns:
-            str: The subtype of the mime type (e.g., 'pdf',
-            'vnd.openxmlformats-officedocument.wordprocessingml.document')
-        """
-        mime_type, _ = mimetypes.guess_type(
-            str(file_name_or_path)
-        )  # Ensure it's a string for guess_type
-        if mime_type:
-            return mime_type.split("/")[1]
-        # Fallback if mimetypes can't guess, rely on extension (already in
-        # self.file_ext)
-        if isinstance(file_name_or_path, Path):
-            ext = file_name_or_path.suffix[1:].lower()
-        else:  # str
-            ext = str(file_name_or_path).split(".")[-1].lower()
-
-        # Map common extensions to mime subtypes if mimetypes fails
-        ext_to_mime_subtype = {
-            "docx": "vnd.openxmlformats-officedocument.wordprocessingml"
-            ".document",
-            "pdf": "pdf",
-            "txt": "plain",
-            "csv": "csv",
-            # Add programming language mappings
-            "py": "x-python",
-            "js": "javascript",
-            "java": "x-java-source",
-            "c": "x-c",
-            "cpp": "x-c++",
-            "html": "html",
-            "css": "css",
-            "json": "json",
-            "xml": "xml",
-        }
-        return ext_to_mime_subtype.get(
-            ext, "octet-stream"
-        )  # Default to octet-stream
-
-    @staticmethod
-    def is_programming_language_file(file_ext: str) -> bool:
-        """
-        Check if the file extension corresponds to a programming language file.
-
-        Args:
-            file_ext: File extension (without dot)
-
-        Returns:
-            bool: True if it's a programming language file
-        """
-        programming_extensions = {
+    PROGRAMMING_EXTENSIONS: frozenset = frozenset(
+        {
             "py",
             "js",
             "ts",
@@ -242,7 +106,145 @@ class FileExtractor:
             "cr",
             "zig",
         }
-        return file_ext.lower() in programming_extensions
+    )
+
+    def __init__(
+        self,
+        file_obj: (
+            str | Path | IO | BytesIO | SpooledTemporaryFile | bytes | None
+        ) = None,  # Expanded type hint
+        filename: str | None = None,
+        file_attr: str = "name",
+    ):
+        """
+        The extractor wrapper will initialize by assigning the filename to the
+        object's file property; if a file-like object is provided instead of a
+        name, then a file_ext arg will be required.
+
+        `filename` is now a fallback for `file_obj.name` if `file_obj` is a
+        type without a `name` attribute (e.g.: SpooledTemporaryFile). In this
+        instance, the `filename` is used to determine the file extension and
+        should not be a fully qualified path.
+
+        Args:
+            file_obj: str | Path | IO | BytesIO | SpooledTemporaryFile |
+            bytes | None
+            filename: : str | None
+            file_attr: str
+        """
+
+        if filename and not file_obj:
+            self.file = Path(filename)
+            self.file_ext = filename.split(".")[
+                -1
+            ].lower()  # Standardize extension to lowercase
+            self.file_name = self.file.name
+        elif file_obj is not None:  # Ensure file_obj is not None
+            if isinstance(file_obj, str):
+                file_obj = Path(file_obj)  # Convert string path to Path object
+
+            # Check if file_obj is a Path object or has the specified file_attr
+            if isinstance(file_obj, Path):
+                self.file = file_obj
+                self.file_name = self.file.name
+                self.file_ext = (
+                    self.file.suffix[1:].lower() if self.file.suffix else ""
+                )  # Get ext from Path
+            elif hasattr(file_obj, file_attr) and isinstance(
+                getattr(file_obj, file_attr), str
+            ):
+                self.file = file_obj
+                f_name = getattr(file_obj, file_attr)
+                self.file_name = f_name
+                self.file_ext = f_name.split(".")[-1].lower()
+            elif (
+                filename
+            ):  # Fallback to using filename if file_obj has no name attribute
+                self.file = file_obj  # This could be BytesIO,
+                # SpooledTemporaryFile, bytes
+                self.file_name = filename
+                self.file_ext = filename.split(".")[-1].lower()
+            else:
+                # If file_obj is a stream without a name and no filename is
+                # provided
+                if isinstance(file_obj, (BytesIO, SpooledTemporaryFile, bytes)):
+                    raise ValueError(
+                        "A 'filename' with an extension is required when "
+                        "'file_obj' is a stream or bytes "
+                        "and does not have a usable name attribute."
+                    )
+                raise ValueError(
+                    f"Your file object (type: {type(file_obj)}) does not "
+                    f"contain a usable '{file_attr}' attribute, and no "
+                    f"fallback 'filename' was provided. Please provide a "
+                    f"'filename' with an extension."
+                )
+        else:  # Neither filename nor file_obj provided
+            raise ValueError(
+                "Either 'file_obj' or 'filename' must be provided."
+            )
+
+    @staticmethod
+    def get_file_type(
+        file_name_or_path: str | Path,
+    ) -> str:  # Added return type hint
+        """
+        A static method that guesses the mime type for a given file object.
+        The return value is taken from the sliced value from
+        `mimetypes.guess_type`
+        Args:
+            file_name_or_path: str | Path
+
+        Returns:
+            str: The subtype of the mime type (e.g., 'pdf',
+            'vnd.openxmlformats-officedocument.wordprocessingml.document')
+        """
+        mime_type, _ = mimetypes.guess_type(
+            str(file_name_or_path)
+        )  # Ensure it's a string for guess_type
+        if mime_type:
+            return mime_type.split("/")[1]
+        # Fallback if mimetypes can't guess, rely on extension (already in
+        # self.file_ext)
+        if isinstance(file_name_or_path, Path):
+            ext = file_name_or_path.suffix[1:].lower()
+        else:  # str
+            ext = str(file_name_or_path).split(".")[-1].lower()
+
+        # Map common extensions to mime subtypes if mimetypes fails
+        ext_to_mime_subtype = {
+            "docx": "vnd.openxmlformats-officedocument.wordprocessingml"
+            ".document",
+            "pdf": "pdf",
+            "txt": "plain",
+            "csv": "csv",
+            # Add programming language mappings
+            "py": "x-python",
+            "js": "javascript",
+            "java": "x-java-source",
+            "c": "x-c",
+            "cpp": "x-c++",
+            "html": "html",
+            "css": "css",
+            "json": "json",
+            "xml": "xml",
+        }
+        return ext_to_mime_subtype.get(
+            ext, "octet-stream"
+        )  # Default to octet-stream
+
+    @staticmethod
+    def is_programming_language_file(file_ext: str) -> bool:
+        """
+        Check if the file extension corresponds to a programming language file.
+
+        Args:
+            file_ext: File extension (without dot)
+
+        Returns:
+            bool: True if it's a programming language file
+        """
+        return file_ext.lower() in FileExtractor.PROGRAMMING_EXTENSIONS
 
     def get_contents(self) -> bytes:
         """
@@ -405,62 +407,64 @@ class FileExtractor:
             text = ""  # Return empty string on failure
         return text
 
-    def text_file_read(self) -> str:  # Added return type hint
+    def _decode_bytes(self, data: bytes, label: str) -> str:
         """
-        Reads contents from a text file, and returns the string value
+        Decode bytes to str, trying UTF-8 then latin-1 then UTF-8 with
+        replacement characters.
+
+        Args:
+            data: Raw bytes to decode.
+            label: Human-readable label used in log/warning messages.
 
         Returns:
             str
         """
-        contents_bytes = (
-            self.get_contents()
-        )  # This should now reliably return bytes
         try:
-            # Attempt to decode as UTF-8, with fallbacks
-            return contents_bytes.decode("utf-8")
+            return data.decode("utf-8")
         except UnicodeDecodeError:
-            try:
-                return contents_bytes.decode("latin-1")
-            except UnicodeDecodeError:
-                logger.warning(
-                    f"Could not decode text file {self.file_name} with utf-8 "
-                    f"or latin-1, trying with replacement."
-                )
-                return contents_bytes.decode("utf-8", errors="replace")
+            pass
+        try:
+            return data.decode("latin-1")
+        except UnicodeDecodeError:
+            pass
+        logger.warning(
+            f"Could not decode {label} with utf-8 or latin-1, "
+            f"using utf-8 with replacement characters."
+        )
+        return data.decode("utf-8", errors="replace")
+
+    def text_file_read(self) -> str:
+        """
+        Read and return the contents of a plain-text file.
+
+        Returns:
+            str
+        """
+        try:
+            return self._decode_bytes(
+                self.get_contents(), f"text file {self.file_name}"
+            )
         except Exception as e:
             logger.error(
-                f"Error reading text file {self.file_name}: {e}", exc_info=True
+                f"Error reading text file {self.file_name}: {e}",
+                exc_info=True,
             )
             return ""
 
-    def csv_file_read(
-        self, newline: str | None = None
-    ) -> str:  # Added return type hint
+    def csv_file_read(self, newline: str | None = None) -> str:
         """
-        Reads contents from a CSV file, and returns the string value.
-        Note: This method currently just returns the raw string content.
-        Actual CSV parsing is commented out.
+        Read and return the raw string contents of a CSV file.
 
         Returns:
             str
         """
-        contents_bytes = (
-            self.get_contents()
-        )  # This should now reliably return bytes
         try:
-            # Attempt to decode as UTF-8, with fallbacks (common for CSV)
-            return contents_bytes.decode("utf-8")
-        except UnicodeDecodeError:
-            try:
-                return contents_bytes.decode("latin-1")
-            except UnicodeDecodeError:
-                logger.warning(
-                    f"Could not decode CSV file {self.file_name} with utf-8 "
-                    f"or latin-1, trying with replacement."
-                )
-                return contents_bytes.decode("utf-8", errors="replace")
+            return self._decode_bytes(
+                self.get_contents(), f"CSV file {self.file_name}"
+            )
         except Exception as e:
             logger.error(
-                f"Error reading CSV file {self.file_name}: {e}", exc_info=True
+                f"Error reading CSV file {self.file_name}: {e}",
+                exc_info=True,
             )
             return ""
