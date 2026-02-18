@@ -84,19 +84,21 @@ TextSpitter/
 │       ├── python-publish.yml   # PyPI release
 │       └── tests.yml            # pytest matrix (3.12 – 3.14)
 ├── TextSpitter/
-│   ├── __init__.py              # TextSpitter() convenience function + __version__
+│   ├── __init__.py              # TextSpitter() + WordLoader public API
 │   ├── cli.py                   # argparse CLI entry point
 │   ├── core.py                  # FileExtractor class
 │   ├── logger.py                # Optional loguru / stdlib fallback
 │   ├── main.py                  # WordLoader dispatcher
-│   └── py.typed                 # PEP 561 marker
-├── docs_src/                    # pdoc documentation pages
+│   ├── py.typed                 # PEP 561 marker
+│   └── guide/                   # pdoc documentation pages (subpackage)
 ├── tests/
 │   ├── conftest.py              # shared fixtures (log_capture)
+│   ├── test_cli.py
 │   ├── test_file_extractor.py
-│   ├── txt_test.py
+│   ├── test_txt.py
 │   └── ...
 ├── CHANGELOG.md
+├── CONTRIBUTING.md
 ├── pyproject.toml
 └── uv.lock
 ```

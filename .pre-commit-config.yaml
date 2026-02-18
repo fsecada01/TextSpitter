@@ -49,3 +49,12 @@ repos:
     hooks:
       - id: black
         exclude: tests/
+
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty (type check)
+        entry: uv run ty check
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false

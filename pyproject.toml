@@ -64,7 +64,7 @@ line_length = 80
 
 [project]
 name = "textspitter"
-version = "0.4.0"
+version = "1.0.0"
 authors = [
   { name="Francis Secada", email="francis.secada@gmail.com" },
 ]
@@ -99,6 +99,9 @@ packages = ["TextSpitter", "TextSpitter.guide"]
 testpaths = ["tests"]
 addopts = "--tb=short"
 
+[tool.ty.environment]
+python-version = "3.12"
+
 [dependency-groups]
 dev = [
     "black",
@@ -113,5 +116,6 @@ dev = [
     "pytest-lazy-fixtures",
     "pytest-mock",
     "ruff",
+    "ty",
     "twine",
 ]

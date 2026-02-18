@@ -31,9 +31,9 @@ def log_capture():
         def _sink(message):
             messages.append(message.record["message"])
 
-        handler_id = logger.add(_sink, level="DEBUG", format="{message}")
+        handler_id = logger.add(_sink, level="DEBUG", format="{message}")  # type: ignore[call-non-callable]
         yield messages
-        logger.remove(handler_id)
+        logger.remove(handler_id)  # type: ignore[union-attr]
     else:
         # stdlib logging fallback
         class _ListHandler(logging.Handler):
@@ -41,9 +41,9 @@ def log_capture():
                 messages.append(record.getMessage())
 
         handler = _ListHandler(level=logging.DEBUG)
-        logger.addHandler(handler)  # type: ignore[union-attr]
-        old_level = logger.level  # type: ignore[union-attr]
-        logger.setLevel(logging.DEBUG)  # type: ignore[union-attr]
+        logger.addHandler(handler)
+        old_level = logger.level
+        logger.setLevel(logging.DEBUG)
         yield messages
-        logger.removeHandler(handler)  # type: ignore[union-attr]
-        logger.setLevel(old_level)  # type: ignore[union-attr]
+        logger.removeHandler(handler)
+        logger.setLevel(old_level)

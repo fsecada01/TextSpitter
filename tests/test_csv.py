@@ -60,6 +60,6 @@ def test_file_extractor_csv(file_input, sample_csv):
         file_name = file_input
     extractor = FileExtractor(file_obj=file_input, filename=file_name)
     assert (
-        extractor.csv_file_read(newline="").strip().replace("\r", "")
+        extractor.csv_file_read().strip().replace("\r", "")
         == sample_csv.strip()
     )

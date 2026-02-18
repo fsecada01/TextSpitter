@@ -11,10 +11,12 @@ except PackageNotFoundError:
 
 from .main import WordLoader
 
+__all__ = ["TextSpitter", "WordLoader", "__version__"]
+
 
 def TextSpitter(
     file_obj=None, filename: str | None = None, file_attr: str = "name"
-):
+) -> str:
     """
     Extract text from a file and return it as a string.
 

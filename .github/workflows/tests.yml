@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
+      - name: Type check
+        run: uv run ty check
+
       - name: Run tests
         run: uv run pytest tests/ --cov=TextSpitter --cov-report=term-missing
 

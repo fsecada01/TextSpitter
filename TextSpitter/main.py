@@ -3,7 +3,6 @@ The main application to host the `WordLoader` object.
 """
 
 from pathlib import Path
-from typing import IO
 
 from .core import FileExtractor
 from .logger import logger
@@ -11,14 +10,18 @@ from .logger import logger
 
 class WordLoader:
     """
-    The CBO that wraps around a `FileExtractor` object. This class object
-    then provides a `file_load` function to process the given file object.
+    Dispatch wrapper that routes a file to the correct
+    :class:`~TextSpitter.core.FileExtractor` reader.
 
-    OOP design principle is being implemented to facilitate future
-    features/enhancements to functionalities.
+    Accepts a file-system path (``str`` or :class:`pathlib.Path`) and an
+    optional *filename* hint.  Strings are converted to
+    :class:`~pathlib.Path` objects automatically.
+
+    Use :class:`~TextSpitter.core.FileExtractor` directly if you need to
+    pass a ``BytesIO``, ``SpooledTemporaryFile``, or raw ``bytes``.
     """
 
-    FILE_EXT_MATRIX: dict = {
+    FILE_EXT_MATRIX: dict[str, str] = {
         "pdf": "pdf_file_read",
         "docx": "docx_file_read",
         "txt": "text_file_read",
@@ -26,7 +29,7 @@ class WordLoader:
         "csv": "csv_file_read",
     }
 
-    TEXT_MIME_TYPES: frozenset = frozenset(
+    TEXT_MIME_TYPES: frozenset[str] = frozenset(
         {
             "plain",
             "javascript",
@@ -43,15 +46,17 @@ class WordLoader:
 
     def __init__(
         self,
-        file_obj: str | Path | IO | None = None,
+        file_obj: str | Path | None = None,
         filename: str | None = None,
         file_attr: str = "name",
     ):
+        if isinstance(file_obj, str):
+            file_obj = Path(file_obj)
         self.file = FileExtractor(
             file_obj=file_obj, filename=filename, file_attr=file_attr
         )
 
-    def file_load(self):
+    def file_load(self) -> str:
         """
         The primary function for this object. The file is processed and then
         sent to the appropriate text extraction function based on the

@@ -7,11 +7,7 @@ import pytest
 try:
     from TextSpitter.logger import logger as word_loader_logger_instance
 except ImportError:
-    # Fallback: if the specific instance isn't easily importable this way,
-    # we might need to rely on loguru's global logger or how it's configured
-    # in TextSpitter.main. For tests, if this fails, capsys is an alternative
-    # if loguru writes to stderr.
-    from loguru import logger as word_loader_logger_instance
+    from loguru import logger as word_loader_logger_instance  # type: ignore[import]
 
 from TextSpitter.core import FileExtractor
 from TextSpitter.main import WordLoader
@@ -27,9 +23,8 @@ def loguru_test_sink(request):  # request is a pytest fixture
         hasattr(word_loader_logger_instance, "add")
         and hasattr(word_loader_logger_instance, "remove")
     ):
-        pytest.skip(
-            "Loguru logger instance not available or not a Loguru object for "
-            "sink testing."
+        pytest.skip(  # type: ignore[invalid-argument-type]
+            "Loguru logger instance not available or not a Loguru object for sink testing."  # type: ignore[too-many-positional-arguments]
         )
 
     log_messages = []
@@ -37,13 +32,13 @@ def loguru_test_sink(request):  # request is a pytest fixture
     def sink_function(message):
         log_messages.append(message.record["message"])
 
-    handler_id = word_loader_logger_instance.add(
+    handler_id = word_loader_logger_instance.add(  # type: ignore[call-non-callable]
         sink_function, format="{message}"
     )
     yield log_messages
 
     try:
-        word_loader_logger_instance.remove(handler_id)
+        word_loader_logger_instance.remove(handler_id)  # type: ignore[call-non-callable]
     except ValueError:
         pass  # Handler already removed or never added
 

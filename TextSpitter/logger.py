@@ -10,4 +10,4 @@ try:
 except ImportError:
     import logging
 
-    logger = logging.getLogger("textspitter")  # type: ignore[assignment]
+    logger = logging.getLogger("textspitter")

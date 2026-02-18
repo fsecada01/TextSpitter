@@ -41,6 +41,10 @@ def main() -> None:
     errors: list[str] = []
 
     for file_path in args.files:
+        p = Path(file_path)
+        if not p.exists():
+            errors.append(f"Error processing {file_path!r}: file not found")
+            continue
         try:
             text = TextSpitter(filename=file_path)
             parts.append(text)

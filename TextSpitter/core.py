@@ -12,12 +12,12 @@ from docx import Document
 
 # --- Module-level imports for optional PDF libraries ---
 try:
-    import pymupdf  # type: ignore[import]
+    import pymupdf
 except ImportError:
     pymupdf = None  # type: ignore[assignment]
 
 try:
-    import pypdf  # type: ignore[import]
+    import pypdf
 except ImportError:
     pypdf = None  # type: ignore[assignment]
 # --- End of module-level imports ---
@@ -30,7 +30,7 @@ class FileExtractor:
     Wrapper for extracting file contents to string
     """
 
-    PROGRAMMING_EXTENSIONS: frozenset = frozenset(
+    PROGRAMMING_EXTENSIONS: frozenset[str] = frozenset(
         {
             "py",
             "js",
@@ -447,7 +447,7 @@ class FileExtractor:
             )
             return ""
 
-    def csv_file_read(self, newline: str | None = None) -> str:
+    def csv_file_read(self) -> str:
         """
         Read and return the raw string contents of a CSV file.
 
