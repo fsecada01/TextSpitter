@@ -30,19 +30,23 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
+        # Editable install ensures TextSpitter.guide is importable by pdoc
         run: uv sync --all-extras --dev
 
-      # Download the syn theme.  The svelte theme is currently WIP in that
-      # repo, so we use dracula.  Switch to "svelte" once it is released.
+      # Clone the syn theme.  Each theme dir (dracula, onedark, rust) contains
+      # custom.css, theme.css, and syntax-highlighting.css that override pdoc's
+      # defaults.  The svelte theme is WIP upstream; switch when released.
       - name: Download syn pdoc theme
-        run: git clone --depth=1 https://github.com/nxtlo/syn.git /tmp/syn-theme
+        run: git clone --depth=1 https://github.com/nxtlo/syn.git /tmp/syn
 
       - name: Build docs with pdoc
+        # Run from project root so the editable install resolves correctly.
+        # TextSpitter.guide is a subpackage and discovered automatically.
         run: |
-          uv run pdoc TextSpitter docs_src \
+          uv run pdoc TextSpitter \
             --output-dir _site/ \
             --docformat google \
-            -t /tmp/syn-theme/dracula
+            -t /tmp/syn/dracula
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3

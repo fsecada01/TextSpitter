@@ -44,7 +44,7 @@ max-complexity = 10
 "__init__.py" = ["F403", "F405", "E501"]
 "consts.py" = ["E501"]
 "tests/*.py" = ["E501"]
-"docs_src/*.py" = ["E501"]
+"TextSpitter/guide/*.py" = ["E501"]
 
 [tool.black]
 line-length = 80
@@ -93,7 +93,7 @@ Homepage = "https://github.com/fsecada01/TextSpitter"
 Issues = "https://github.com/fsecada01/TextSpitter/issues"
 
 [tool.setuptools]
-packages = ["TextSpitter"]
+packages = ["TextSpitter", "TextSpitter.guide"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
