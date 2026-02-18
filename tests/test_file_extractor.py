@@ -2,7 +2,6 @@
 Tests for the FileExtractor class.
 """
 
-import logging
 from io import BytesIO, IOBase
 from pathlib import Path
 from tempfile import SpooledTemporaryFile, TemporaryDirectory
@@ -245,15 +244,14 @@ def test_get_contents_from_bytes():
     assert extractor.get_contents() == data
 
 
-def test_get_contents_stream_returns_string_warns_and_encodes(caplog):
+def test_get_contents_stream_returns_string_warns_and_encodes(log_capture):
     mock_file_obj = MagicMock(spec=IOBase)
     mock_file_obj.read = MagicMock(return_value="string data from stream")
     mock_file_obj.seek = MagicMock(return_value=0)
     extractor = FileExtractor(file_obj=mock_file_obj, filename="dummy.txt")
-    caplog.set_level(logging.WARNING, logger="TextSpitter.core")
     content_bytes = extractor.get_contents()
     assert content_bytes == "string data from stream".encode("utf-8")
-    assert "Read data from stream as string, encoding to UTF-8." in caplog.text
+    assert "Read data from stream as string, encoding to UTF-8." in "\n".join(log_capture)
 
 
 def test_get_contents_unsupported_type_raises_error():
@@ -283,7 +281,7 @@ def test_code_file_read_latin1():
     assert extractor.code_file_read() == content_str
 
 
-def test_code_file_read_fallback_to_replace_on_decode_error(mocker, caplog):
+def test_code_file_read_fallback_to_replace_on_decode_error(mocker, log_capture):
     original_bytes_content = b"\x80\x90\xa0"  # Intended to fail initial decodes
 
     mock_bytes_instance = MagicMock(spec=bytes)
@@ -305,12 +303,11 @@ def test_code_file_read_fallback_to_replace_on_decode_error(mocker, caplog):
     )
 
     extractor = FileExtractor(filename="broken.bin")
-    caplog.set_level(logging.WARNING, logger="TextSpitter.core")
     decoded_content = extractor.code_file_read()
 
     assert (
         "Could not decode code file broken.bin with standard encodings"
-        in caplog.text
+        in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")
     assert decoded_content == original_bytes_content.decode(
@@ -345,7 +342,7 @@ def test_pdf_file_read_with_pymupdf(mocker):
     )
 
 
-def test_pdf_file_read_fallback_to_pypdf(mocker, caplog):
+def test_pdf_file_read_fallback_to_pypdf(mocker, log_capture):
     mocker.patch(
         "TextSpitter.core.pymupdf", None
     )  # Simulate pymupdf not imported
@@ -361,13 +358,12 @@ def test_pdf_file_read_fallback_to_pypdf(mocker, caplog):
     mock_pypdf_module.PdfReader.return_value = mock_pdf_reader_instance
 
     extractor = FileExtractor(file_obj=b"fake pdf data", filename="test.pdf")
-    caplog.set_level(logging.WARNING, logger="TextSpitter.core")
     result = extractor.pdf_file_read()
 
     assert result == "PyPDF Page 1. PyPDF Page 2."
     assert (
         "PyMuPDF failed (pymupdf module not available or import failed.), trying PyPDF2"
-        in caplog.text
+        in "\n".join(log_capture)
     )
     mock_pypdf_module.PdfReader.assert_called_once()
     assert isinstance(mock_pypdf_module.PdfReader.call_args[0][0], BytesIO)
@@ -377,7 +373,7 @@ def test_pdf_file_read_fallback_to_pypdf(mocker, caplog):
     )
 
 
-def test_pdf_file_read_both_fail(mocker, caplog):
+def test_pdf_file_read_both_fail(mocker, log_capture):
     mock_pymupdf_module = mocker.patch("TextSpitter.core.pymupdf", create=True)
     assert mock_pymupdf_module is not None
     mock_pymupdf_module.open.side_effect = Exception("PyMuPDF open error")
@@ -387,23 +383,12 @@ def test_pdf_file_read_both_fail(mocker, caplog):
     mock_pypdf_module.PdfReader.side_effect = Exception("PyPDF reader error")
 
     extractor = FileExtractor(file_obj=b"fake pdf data", filename="test.pdf")
-    # Set caplog to capture WARNING and above to get both log messages
-    caplog.set_level(logging.WARNING, logger="TextSpitter.core")
-
     result = extractor.pdf_file_read()
 
     assert result == ""
-    # Check for both log messages in the records
-    assert any(
-        "PyMuPDF failed (PyMuPDF open error), trying PyPDF2 for PDF: test.pdf"
-        in record.message
-        for record in caplog.records
-    )
-    assert any(
-        "Both PyMuPDF and PyPDF2 failed for PDF test.pdf: PyPDF reader error"
-        in record.message
-        for record in caplog.records
-    )
+    logs = "\n".join(log_capture)
+    assert "PyMuPDF failed (PyMuPDF open error), trying PyPDF2 for PDF: test.pdf" in logs
+    assert "Both PyMuPDF and PyPDF2 failed for PDF test.pdf: PyPDF reader error" in logs
 
 
 # --- docx_file_read tests ---
@@ -423,18 +408,18 @@ def test_docx_file_read_success(mocker):
     assert mock_docx_Document.call_args[0][0].read() == b"fake docx data"
 
 
-def test_docx_file_read_failure(mocker, caplog):
+def test_docx_file_read_failure(mocker, log_capture):
     mocker.patch(
         "TextSpitter.core.Document",
         create=True,
         side_effect=Exception("DOCX parsing error"),
     )
     extractor = FileExtractor(file_obj=b"fake docx data", filename="test.docx")
-    caplog.set_level(logging.ERROR, logger="TextSpitter.core")
     result = extractor.docx_file_read()
     assert result == ""
     assert (
-        "Error reading DOCX file test.docx: DOCX parsing error" in caplog.text
+        "Error reading DOCX file test.docx: DOCX parsing error"
+        in "\n".join(log_capture)
     )
 
 
@@ -455,7 +440,7 @@ def test_text_file_read_latin1_fallback():
     assert extractor.text_file_read() == content_str
 
 
-def test_text_file_read_replace_on_decode_error(mocker, caplog):
+def test_text_file_read_replace_on_decode_error(mocker, log_capture):
     original_bytes_content = (
         b"\x81\xfe\xff"  # Intended to fail utf-8 and latin-1
     )
@@ -479,12 +464,11 @@ def test_text_file_read_replace_on_decode_error(mocker, caplog):
     )
 
     extractor = FileExtractor(filename="badtext.txt")
-    caplog.set_level(logging.WARNING, logger="TextSpitter.core")
     result = extractor.text_file_read()
 
     assert (
         "Could not decode text file badtext.txt with utf-8 or latin-1"
-        in caplog.text
+        in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")
     assert result == original_bytes_content.decode("utf-8", errors="replace")
@@ -506,7 +490,7 @@ def test_csv_file_read_latin1_fallback():
     assert extractor.csv_file_read() == content_str
 
 
-def test_csv_file_read_replace_on_decode_error(mocker, caplog):
+def test_csv_file_read_replace_on_decode_error(mocker, log_capture):
     original_bytes_content = (
         b"\xcc\x81\xfe\xff"  # Intended to fail utf-8 and latin-1
     )
@@ -530,11 +514,11 @@ def test_csv_file_read_replace_on_decode_error(mocker, caplog):
     )
 
     extractor = FileExtractor(filename="bad.csv")
-    caplog.set_level(logging.WARNING, logger="TextSpitter.core")
     result = extractor.csv_file_read()
 
     assert (
-        "Could not decode CSV file bad.csv with utf-8 or latin-1" in caplog.text
+        "Could not decode CSV file bad.csv with utf-8 or latin-1"
+        in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")
     assert result == original_bytes_content.decode("utf-8", errors="replace")
