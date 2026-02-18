@@ -197,6 +197,8 @@ uv run pytest tests/ --cov=TextSpitter --cov-report=term-missing
 
 ## Roadmap
 
+### v1.x (current)
+
 - [x] Stream-based API (`BytesIO`, `SpooledTemporaryFile`, raw `bytes`)
 - [x] CLI entry point (`uv tool install textspitter`)
 - [x] Optional loguru logging with stdlib fallback
@@ -205,6 +207,16 @@ uv run pytest tests/ --cov=TextSpitter --cov-report=term-missing
 - [ ] Async extraction API
 - [ ] CSV → structured output (list of dicts)
 - [ ] PPTX support
+
+### v2.0 — Rust backend ([full roadmap](TEXTSPITTER_2_0_RUST_ROADMAP.md))
+
+- [ ] Rust splitting core via PyO3 + Maturin — **10x–40x** batch throughput
+- [ ] Graceful Python fallback when Rust extension is unavailable
+- [ ] `manylinux` wheels on PyPI — zero-compile install for Linux users
+- [ ] Memory-mapped file processing for very large PDFs (`memmap2`)
+- [ ] SIMD-accelerated string search for separator detection
+- [ ] Streaming iterator API (yield chunks instead of collecting all)
+- [ ] Optional SIMD feature flag (`pip install "textspitter[simd]"`)
 
 ---
 
