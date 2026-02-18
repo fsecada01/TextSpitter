@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start - TextSpitter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header .breadcrumb {
+            opacity: 0.9;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 3rem 2rem;
+        }
+
+        section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            color: #333;
+        }
+
+        h3:first-child {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block code {
+            font-family: "Courier New", monospace;
+            font-size: 0.9rem;
+            white-space: inherit;
+        }
+
+        details {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        details[open] {
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            outline: none;
+            user-select: none;
+        }
+
+        summary:hover {
+            text-decoration: underline;
+        }
+
+        details > * {
+            margin-top: 1rem;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.3rem;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Quick Start</h1>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / Quick Start
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <section>
+                <h2>Get up and running in under two minutes</h2>
+
+                <h3>1 — Install</h3>
+
+                <details open>
+                    <summary><strong>pip</strong></summary>
+                    <div class="code-block"><code>pip install textspitter
+
+# With optional loguru logging
+pip install "textspitter[logging]"</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>uv (library dependency)</strong></summary>
+                    <div class="code-block"><code>uv add textspitter
+uv add "textspitter[logging]"</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>uv tool (standalone CLI)</strong></summary>
+                    <p>Installs <code>textspitter</code> as an isolated tool — no virtual environment management required.</p>
+                    <div class="code-block"><code>uv tool install textspitter</code></div>
+                </details>
+
+                <h3>2 — Extract your first file</h3>
+
+                <div class="code-block"><code>from TextSpitter import TextSpitter
+
+text = TextSpitter(filename="path/to/document.pdf")
+print(text[:500])</code></div>
+
+                <p><code>TextSpitter()</code> auto-detects the format from the file extension, picks the right reader, and returns a plain <code>str</code>.</p>
+
+                <h3>3 — Use the CLI</h3>
+
+                <div class="code-block"><code># Single file to stdout
+textspitter report.pdf
+
+# Multiple files saved to a combined output
+textspitter chapter1.pdf chapter2.pdf -o book.txt</code></div>
+
+                <h3>4 — Work with streams</h3>
+
+                <div class="code-block"><code>from io import BytesIO
+from TextSpitter import TextSpitter
+
+# From BytesIO (e.g. web upload, boto3, httpx)
+text = TextSpitter(file_obj=BytesIO(pdf_bytes), filename="report.pdf")
+
+# From raw bytes
+text = TextSpitter(file_obj=some_bytes, filename="data.csv")</code></div>
+
+                <p><code>filename</code> is required for streams so TextSpitter knows which reader to use.</p>
+
+                <h3>5 — Next steps</h3>
+
+                <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li><a href="tutorial.html">Tutorial</a> — format-by-format walkthrough</li>
+                    <li><a href="usecases.html">Use Cases</a> — FastAPI, S3, LangChain patterns</li>
+                    <li><a href="recipes.html">Recipes</a> — copy-paste snippets</li>
+                    <li><a href="TextSpitter.html">API Reference</a> — full API documentation</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>TextSpitter is released under the <a href="https://github.com/fsecada01/TextSpitter/blob/main/LICENSE">MIT License</a></p>
+        </div>
+    </footer>
+</body>
+</html>

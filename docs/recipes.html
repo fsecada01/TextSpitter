@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes - TextSpitter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+        header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        header a { color: white; text-decoration: none; }
+        header a:hover { text-decoration: underline; }
+        main { padding: 3rem 2rem; }
+        section { background: white; padding: 2rem; margin-bottom: 2rem; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { font-size: 1.8rem; margin-bottom: 1.5rem; color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.3rem; margin-bottom: 1rem; margin-top: 1.5rem; color: #333; }
+        h3:first-child { margin-top: 0; }
+        p { margin-bottom: 1rem; color: #555; }
+        .code-block { background: #f8f9fa; border-left: 4px solid #667eea; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; white-space: pre-wrap; word-wrap: break-word; }
+        .code-block code { font-family: "Courier New", monospace; font-size: 0.9rem; white-space: inherit; }
+        details { margin: 1.5rem 0; padding: 1rem; background: #f8f9fa; border-radius: 0.5rem; border-left: 4px solid #667eea; }
+        details[open] { background: white; border: 1px solid #ddd; }
+        summary { cursor: pointer; font-weight: 600; color: #667eea; outline: none; user-select: none; }
+        summary:hover { text-decoration: underline; }
+        details > * { margin-top: 1rem; }
+        code { background: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 0.3rem; font-family: "Courier New", monospace; font-size: 0.9em; }
+        .back-link { display: inline-block; margin-bottom: 2rem; color: #667eea; text-decoration: none; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+        footer { background: #2c3e50; color: white; text-align: center; padding: 2rem; margin-top: 3rem; }
+        footer a { color: #667eea; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 768px) { header h1 { font-size: 1.8rem; } section { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Recipes</h1>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / Recipes
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <section>
+                <h2>Copy-paste snippets for common tasks</h2>
+
+                <h3>Input handling</h3>
+
+                <details open>
+                    <summary><strong>From <code>BytesIO</code></strong></summary>
+                    <div class="code-block"><code>from io import BytesIO
+from TextSpitter import TextSpitter
+
+with open("report.pdf", "rb") as f:
+    text = TextSpitter(file_obj=BytesIO(f.read()), filename="report.pdf")
+# Stream is rewound automatically — no seek(0) needed.</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>From <code>SpooledTemporaryFile</code></strong></summary>
+                    <div class="code-block"><code>from tempfile import SpooledTemporaryFile
+from TextSpitter import TextSpitter
+
+with SpooledTemporaryFile(max_size=10 * 1024 * 1024) as stf:
+    stf.write(pdf_bytes)
+    stf.seek(0)
+    text = TextSpitter(file_obj=stf, filename="upload.pdf")</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>From raw <code>bytes</code></strong></summary>
+                    <div class="code-block"><code>from TextSpitter import TextSpitter
+
+text = TextSpitter(file_obj=pdf_bytes, filename="document.pdf")</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Custom filename attribute</strong></summary>
+                    <p>Some frameworks expose the original name on a non-standard attribute. Pass <code>file_attr</code> to tell <code>FileExtractor</code> where to look:</p>
+                    <div class="code-block"><code>from TextSpitter.core import FileExtractor
+
+fe = FileExtractor(file_obj=upload_obj, file_attr="original_name")
+text = fe.text_file_read()</code></div>
+                </details>
+
+                <h3>Format-specific</h3>
+
+                <details open>
+                    <summary><strong>Force pypdf (skip PyMuPDF)</strong></summary>
+                    <div class="code-block"><code>import TextSpitter.core as _core
+from TextSpitter.core import FileExtractor
+
+_real, _core.pymupdf = _core.pymupdf, None
+try:
+    text = FileExtractor(file_obj=pdf_bytes, filename="doc.pdf").pdf_file_read()
+finally:
+    _core.pymupdf = _real</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>DOCX paragraphs as a list</strong></summary>
+                    <div class="code-block"><code>from TextSpitter import TextSpitter
+
+text = TextSpitter(filename="doc.docx")
+paragraphs = [ln for ln in text.splitlines() if ln.strip()]</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>CSV into rows</strong></summary>
+                    <div class="code-block"><code>import csv, io
+from TextSpitter import TextSpitter
+
+raw = TextSpitter(filename="data.csv")
+rows = list(csv.DictReader(io.StringIO(raw)))
+print(rows[0])</code></div>
+                </details>
+
+                <h3>Error and encoding</h3>
+
+                <details open>
+                    <summary><strong>Detect decode warnings (loguru)</strong></summary>
+                    <div class="code-block"><code>from loguru import logger
+
+seen = []
+logger.add(lambda m: seen.append(m.record["message"]), level="WARNING")
+
+from TextSpitter import TextSpitter
+TextSpitter(filename="legacy.txt")
+
+if seen:
+    print("Encoding issues:", seen)</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Validate extraction result</strong></summary>
+                    <div class="code-block"><code>from TextSpitter import TextSpitter
+
+def safe_extract(path: str) -> str | None:
+    text = TextSpitter(filename=path)
+    return text if text and text.strip() else None</code></div>
+                </details>
+
+                <h3>Testing</h3>
+
+                <details open>
+                    <summary><strong>Unit-test a function that calls TextSpitter</strong></summary>
+                    <div class="code-block"><code>def test_my_function(tmp_path):
+    (tmp_path / "doc.txt").write_text("Hello world")
+    result = my_function(str(tmp_path / "doc.txt"))
+    assert "Hello" in result</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Mock TextSpitter in integration tests</strong></summary>
+                    <div class="code-block"><code>from unittest.mock import patch
+
+with patch("myapp.routes.TextSpitter", return_value="mocked text"):
+    response = client.post("/extract", ...)
+
+assert response.json()["text"] == "mocked text"</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Capture log output</strong></summary>
+                    <p>TextSpitter tests include a <code>log_capture</code> fixture that works with or without loguru:</p>
+                    <div class="code-block"><code>def test_warns_on_bad_encoding(log_capture, tmp_path):
+    (tmp_path / "bad.txt").write_bytes(b"\\x81\\xfe\\xff")
+    from TextSpitter import TextSpitter
+    TextSpitter(filename=str(tmp_path / "bad.txt"))
+    assert any("utf-8 or latin-1" in m for m in log_capture)</code></div>
+                    <p>See the project's <code>tests/conftest.py</code> for the fixture definition.</p>
+                </details>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>TextSpitter is released under the <a href="https://github.com/fsecada01/TextSpitter/blob/main/LICENSE">MIT License</a></p>
+        </div>
+    </footer>
+</body>
+</html>

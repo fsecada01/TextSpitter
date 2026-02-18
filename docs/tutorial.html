@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - TextSpitter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+        header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        header a { color: white; text-decoration: none; }
+        header a:hover { text-decoration: underline; }
+        main { padding: 3rem 2rem; }
+        section { background: white; padding: 2rem; margin-bottom: 2rem; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { font-size: 1.8rem; margin-bottom: 1.5rem; color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.3rem; margin-bottom: 1rem; margin-top: 1.5rem; color: #333; }
+        h3:first-child { margin-top: 0; }
+        p { margin-bottom: 1rem; color: #555; }
+        .code-block { background: #f8f9fa; border-left: 4px solid #667eea; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; white-space: pre-wrap; word-wrap: break-word; }
+        .code-block code { font-family: "Courier New", monospace; font-size: 0.9rem; white-space: inherit; }
+        details { margin: 1.5rem 0; padding: 1rem; background: #f8f9fa; border-radius: 0.5rem; border-left: 4px solid #667eea; }
+        details[open] { background: white; border: 1px solid #ddd; }
+        summary { cursor: pointer; font-weight: 600; color: #667eea; outline: none; user-select: none; }
+        summary:hover { text-decoration: underline; }
+        details > * { margin-top: 1rem; }
+        code { background: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 0.3rem; font-family: "Courier New", monospace; font-size: 0.9em; }
+        .back-link { display: inline-block; margin-bottom: 2rem; color: #667eea; text-decoration: none; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+        footer { background: #2c3e50; color: white; text-align: center; padding: 2rem; margin-top: 3rem; }
+        footer a { color: #667eea; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 768px) { header h1 { font-size: 1.8rem; } section { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Tutorial</h1>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / Tutorial
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <section>
+                <h2>End-to-end walkthrough covering every supported format</h2>
+
+                <h3>PDF files</h3>
+
+                <details open>
+                    <summary><strong>From a file path</strong></summary>
+                    <div class="code-block"><code>from TextSpitter import TextSpitter
+
+text = TextSpitter(filename="annual_report.pdf")
+print(f"Extracted {len(text)} characters")</code></div>
+                    <p>Internally, <code>pdf_file_read()</code> tries PyMuPDF first, then falls back to pypdf if PyMuPDF fails for any reason (import error, corrupt file, platform restriction).</p>
+                </details>
+
+                <details>
+                    <summary><strong>From bytes (downloaded at runtime)</strong></summary>
+                    <div class="code-block"><code>import httpx
+from TextSpitter import TextSpitter
+
+response = httpx.get("https://example.com/report.pdf")
+text = TextSpitter(file_obj=response.content, filename="report.pdf")</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Scanned / image-only PDFs</strong></summary>
+                    <p>TextSpitter extracts <em>embedded text layers</em> only. Scanned PDFs with no text layer return an empty string. Pre-process with an OCR tool (e.g. <code>pytesseract</code>) and pass the resulting text directly.</p>
+                </details>
+
+                <h3>Word documents (DOCX)</h3>
+
+                <details open>
+                    <summary><strong>From a file path</strong></summary>
+                    <div class="code-block"><code>from TextSpitter import TextSpitter
+
+text = TextSpitter(filename="contract.docx")</code></div>
+                    <p><code>docx_file_read()</code> uses python-docx to iterate every <code>Paragraph</code> and joins them with newlines.</p>
+                </details>
+
+                <details>
+                    <summary><strong>From a FastAPI upload</strong></summary>
+                    <div class="code-block"><code>from fastapi import UploadFile
+from io import BytesIO
+from TextSpitter import TextSpitter
+
+async def extract(file: UploadFile) -> str:
+    data = await file.read()
+    return TextSpitter(file_obj=BytesIO(data), filename=file.filename)</code></div>
+                </details>
+
+                <h3>Plain text and CSV</h3>
+
+                <details open>
+                    <summary><strong>TXT</strong></summary>
+                    <div class="code-block"><code>text = TextSpitter(filename="notes.txt")</code></div>
+                    <p><code>text_file_read()</code> tries UTF-8, then latin-1. If both fail, falls back to UTF-8 with replacement characters and logs a warning.</p>
+                </details>
+
+                <details>
+                    <summary><strong>CSV — raw string</strong></summary>
+                    <div class="code-block"><code>import csv, io
+from TextSpitter import TextSpitter
+
+raw = TextSpitter(filename="data.csv")
+rows = list(csv.reader(io.StringIO(raw)))</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Non-UTF-8 encoded files</strong></summary>
+                    <p>Files saved in latin-1 or Windows-1252 are handled automatically — no configuration required.</p>
+                    <div class="code-block"><code>text = TextSpitter(filename="legacy_export.txt")  # cp1252? latin-1? works.</code></div>
+                </details>
+
+                <h3>Source code files</h3>
+
+                <p>50+ programming-language extensions are routed through <code>code_file_read()</code>, which uses a wider encoding cascade than the plain-text reader.</p>
+
+                <details open>
+                    <summary><strong>Single file</strong></summary>
+                    <div class="code-block"><code>source = TextSpitter(filename="main.py")</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Batch extraction from a directory</strong></summary>
+                    <div class="code-block"><code>from pathlib import Path
+from TextSpitter import TextSpitter
+
+texts = {
+    str(p): TextSpitter(filename=str(p))
+    for p in Path("my_project").rglob("*.py")
+}</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Supported extensions</strong></summary>
+                    <p>.py .js .ts .jsx .tsx .java .kt .go .rs .cpp .c .cs .rb .php .swift .dart .elm .ex .erl .jl .nim .zig .lua .r .sql .sh .bash .html .css .scss .json .yaml .toml .xml .md .rst and more.</p>
+                </details>
+
+                <h3>Using <code>WordLoader</code> directly</h3>
+
+                <div class="code-block"><code>from TextSpitter.main import WordLoader
+
+loader = WordLoader(filename="document.pdf")
+text = loader.file_load()</code></div>
+
+                <h3>Using <code>FileExtractor</code> directly</h3>
+
+                <div class="code-block"><code>from TextSpitter.core import FileExtractor
+
+fe = FileExtractor(file_obj=pdf_bytes, filename="report.pdf")
+raw   = fe.get_contents()    # always bytes
+text  = fe.pdf_file_read()   # extracted text</code></div>
+
+                <p>Useful when you need to call multiple reader methods on the same file, or inspect <code>file_name</code> / <code>file_ext</code> before extracting.</p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>TextSpitter is released under the <a href="https://github.com/fsecada01/TextSpitter/blob/main/LICENSE">MIT License</a></p>
+        </div>
+    </footer>
+</body>
+</html>

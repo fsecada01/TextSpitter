@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Overview - TextSpitter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header .breadcrumb {
+            opacity: 0.9;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 3rem 2rem;
+        }
+
+        section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            color: #333;
+        }
+
+        h3:first-child {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block code {
+            font-family: "Courier New", monospace;
+            font-size: 0.9rem;
+            white-space: inherit;
+        }
+
+        .code-pre {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre;
+            word-wrap: normal;
+        }
+
+        .code-pre code {
+            font-family: "Courier New", monospace;
+            font-size: 0.9rem;
+            white-space: inherit;
+        }
+
+        details {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        details[open] {
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            outline: none;
+            user-select: none;
+        }
+
+        summary:hover {
+            text-decoration: underline;
+        }
+
+        details > * {
+            margin-top: 1rem;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.3rem;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Technical Overview</h1>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / Technical Overview
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <section>
+                <h2>Architecture, module map, and design decisions</h2>
+
+                <h3>Module map</h3>
+
+                <div class="code-pre"><code>TextSpitter/
+├── __init__.py    TextSpitter()   — convenience function + __version__
+├── cli.py         main()          — argparse CLI entry point
+├── core.py        FileExtractor   — low-level reader
+├── guide/                         — this user guide (subpackage)
+├── logger.py      logger          — optional loguru / stdlib shim
+└── main.py        WordLoader      — format dispatcher</code></div>
+
+                <h3>Three-layer design</h3>
+
+                <details open>
+                    <summary><strong>Layer 1 — Public surface (<code>__init__.py</code>)</strong></summary>
+
+                    <p><code>TextSpitter(file_obj, filename)</code> is a plain function that creates a <code>WordLoader</code>, calls <code>file_load()</code>, and returns the <code>str</code>.</p>
+
+                    <div class="code-block"><code>from TextSpitter import TextSpitter
+
+text = TextSpitter(filename="notes.txt")</code></div>
+                </details>
+
+                <details>
+                    <summary><strong>Layer 2 — Dispatcher (<code>WordLoader</code>)</strong></summary>
+
+                    <p><code>WordLoader</code> holds two class-level constants:</p>
+
+                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                        <li><code>FILE_EXT_MATRIX</code> — maps file extensions to <code>FileExtractor</code> method names.</li>
+                        <li><code>TEXT_MIME_TYPES</code> — MIME subtypes treated as plain-text.</li>
+                    </ul>
+
+                    <p><code>file_load()</code> checks the extension first, then <code>is_programming_language_file()</code>, then MIME type. Unknown formats log an error and return <code>""</code>.</p>
+                </details>
+
+                <details>
+                    <summary><strong>Layer 3 — Reader (<code>FileExtractor</code>)</strong></summary>
+
+                    <p><code>FileExtractor.__init__</code> resolves any input into three normalised attributes:</p>
+
+                    <table>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code>file</code></td>
+                            <td><code>Path | IO | bytes</code></td>
+                            <td>The underlying file object</td>
+                        </tr>
+                        <tr>
+                            <td><code>file_name</code></td>
+                            <td><code>str</code></td>
+                            <td>Filename including extension</td>
+                        </tr>
+                        <tr>
+                            <td><code>file_ext</code></td>
+                            <td><code>str</code></td>
+                            <td>Lowercase extension without dot</td>
+                        </tr>
+                    </table>
+
+                    <p>All reader methods call <code>get_contents()</code> first, which always returns <code>bytes</code>.</p>
+                </details>
+
+                <h3>Input resolution</h3>
+
+                <p><code>get_contents()</code> handles four input shapes:</p>
+
+                <table>
+                    <tr>
+                        <th><code>self.file</code> type</th>
+                        <th>Behaviour</th>
+                    </tr>
+                    <tr>
+                        <td><code>Path</code></td>
+                        <td>Opens in binary mode and reads</td>
+                    </tr>
+                    <tr>
+                        <td><code>BytesIO</code> / <code>SpooledTemporaryFile</code></td>
+                        <td>Seeks to 0, then reads</td>
+                    </tr>
+                    <tr>
+                        <td><code>bytes</code></td>
+                        <td>Returned as-is</td>
+                    </tr>
+                    <tr>
+                        <td>Other stream (<code>IOBase</code>)</td>
+                        <td>Cast to <code>BinaryIO</code>, seek, read</td>
+                    </tr>
+                </table>
+
+                <h3>PDF fallback chain</h3>
+
+                <div class="code-pre"><code>pymupdf.open(stream=…)
+    │ success → return text
+    └─ ImportError / any Exception
+           │
+           ▼
+    pypdf.PdfReader(BytesIO(…))
+           │ success → return text
+           └─ Exception
+                  │
+                  ▼
+              log error, return ""</code></div>
+
+                <h3>Encoding strategy</h3>
+
+                <p><code>_decode_bytes()</code> uses a three-step cascade for TXT and CSV:</p>
+
+                <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li><code>bytes.decode("utf-8")</code> — strict</li>
+                    <li><code>bytes.decode("latin-1")</code> — strict (never raises for any byte value)</li>
+                    <li><code>bytes.decode("utf-8", errors="replace")</code> — logs a warning</li>
+                </ol>
+
+                <p><code>code_file_read()</code> tries a wider list: <code>utf-8 → utf-8-sig → latin-1 → cp1252 → utf-8/replace</code>.</p>
+
+                <h3>Optional logging</h3>
+
+                <p><code>logger.py</code> exports a single <code>logger</code> object. At import time it tries <code>from loguru import logger</code>; on <code>ImportError</code> it falls back to <code>logging.getLogger("textspitter")</code>. All call sites use this shim, so the rest of the codebase is backend-agnostic.</p>
+
+                <div class="code-block"><code>pip install "textspitter[logging]"   # enable loguru</code></div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>TextSpitter is released under the <a href="https://github.com/fsecada01/TextSpitter/blob/main/LICENSE">MIT License</a></p>
+        </div>
+    </footer>
+</body>
+</html>
