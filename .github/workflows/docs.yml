@@ -32,16 +32,22 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
+      # Download the syn theme.  The svelte theme is currently WIP in that
+      # repo, so we use dracula.  Switch to "svelte" once it is released.
+      - name: Download syn pdoc theme
+        run: git clone --depth=1 https://github.com/nxtlo/syn.git /tmp/syn-theme
+
       - name: Build docs with pdoc
         run: |
-          uv run pdoc TextSpitter \
-            --output-dir docs/ \
-            --docformat google
+          uv run pdoc TextSpitter docs_src \
+            --output-dir _site/ \
+            --docformat google \
+            -t /tmp/syn-theme/dracula
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/
+          path: _site/
 
   deploy-docs:
     needs: build-docs
