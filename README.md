@@ -208,7 +208,7 @@ uv run pytest tests/ --cov=TextSpitter --cov-report=term-missing
 - [ ] CSV → structured output (list of dicts)
 - [ ] PPTX support
 
-### v2.0 — Rust backend ([full roadmap](TEXTSPITTER_2_0_RUST_ROADMAP.md))
+### v2.0 — Rust backend ([full roadmap](https://github.com/fsecada01/TextSpitter/wiki/TextSpitter-2.0-Rust-Roadmap))
 
 - [ ] Rust splitting core via PyO3 + Maturin — **10x–40x** batch throughput
 - [ ] Graceful Python fallback when Rust extension is unavailable
