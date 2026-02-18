@@ -6,8 +6,8 @@ to the standard library logging module.
 """
 
 try:
-    from loguru import logger  # type: ignore[import]
+    from loguru import logger
 except ImportError:
     import logging
 
-    logger = logging.getLogger("textspitter")
+    logger = logging.getLogger("textspitter")  # type: ignore[assignment]

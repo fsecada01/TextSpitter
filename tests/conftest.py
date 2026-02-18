@@ -31,9 +31,9 @@ def log_capture():
         def _sink(message):
             messages.append(message.record["message"])
 
-        handler_id = logger.add(_sink, level="DEBUG", format="{message}")  # type: ignore[call-non-callable]
+        handler_id = logger.add(_sink, level="DEBUG", format="{message}")
         yield messages
-        logger.remove(handler_id)  # type: ignore[union-attr]
+        logger.remove(handler_id)
     else:
         # stdlib logging fallback
         class _ListHandler(logging.Handler):

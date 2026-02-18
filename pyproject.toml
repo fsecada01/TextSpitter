@@ -109,6 +109,7 @@ dev = [
     "isort",
     "jupyterlab",
     "jupyterlab-code-formatter",
+    "loguru",
     "pdoc",
     "prek",
     "pytest",

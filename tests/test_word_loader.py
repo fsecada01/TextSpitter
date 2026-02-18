@@ -7,7 +7,7 @@ import pytest
 try:
     from TextSpitter.logger import logger as word_loader_logger_instance
 except ImportError:
-    from loguru import logger as word_loader_logger_instance  # type: ignore[import]
+    from loguru import logger as word_loader_logger_instance
 
 from TextSpitter.core import FileExtractor
 from TextSpitter.main import WordLoader
@@ -32,13 +32,13 @@ def loguru_test_sink(request):  # request is a pytest fixture
     def sink_function(message):
         log_messages.append(message.record["message"])
 
-    handler_id = word_loader_logger_instance.add(  # type: ignore[call-non-callable]
+    handler_id = word_loader_logger_instance.add(
         sink_function, format="{message}"
     )
     yield log_messages
 
     try:
-        word_loader_logger_instance.remove(handler_id)  # type: ignore[call-non-callable]
+        word_loader_logger_instance.remove(handler_id)
     except ValueError:
         pass  # Handler already removed or never added
 

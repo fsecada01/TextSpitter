@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebSearch",
+      "Bash(uv sync:*)",
+      "Bash(pre-commit uninstall:*)",
+      "Bash(uv run:*)",
+      "Bash(git push:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(rtk git add:*)",
+      "Bash(rtk git:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git rm:*)",
+      "WebFetch(domain:pdoc.dev)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(echo:*)",
+      "Bash(dir:*)",
+      "Bash(git -C \"C:/dev/python/modules/TextSpitter\" status --short)",
+      "Bash(git -C \"C:/dev/python/modules/TextSpitter\" rm tests/txt_test.py)",
+      "Bash(git -C \"C:/dev/python/modules/TextSpitter\" add core_requirements.in core_requirements.txt dev_requirements.in dev_requirements.txt requirements.txt .pre-commit-config.yaml TextSpitter/__init__.py TextSpitter/main.py TextSpitter/core.py tests/test_cli.py tests/test_txt.py CONTRIBUTING.md CHANGELOG.md README.md uv.lock)",
+      "Bash(python -m pytest:*)",
+      "Bash(findstr:*)",
+      "Bash(git -C \"C:/dev/python/modules/TextSpitter\" add TextSpitter/cli.py tests/test_csv.py pyproject.toml .github/workflows/tests.yml uv.lock)",
+      "Bash(git -C:*)",
+      "Bash(uv:*)",
+      "Bash(.venv/Scripts/ty.exe check:*)",
+      "Bash(\".venv/Scripts/ty.exe\" --version)"
+    ]
+  }
+}
