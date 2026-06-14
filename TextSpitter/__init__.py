@@ -9,9 +9,40 @@ try:
 except PackageNotFoundError:
     __version__ = "unknown"
 
+try:
+    from TextSpitter._core import (  # type: ignore[import]
+        Chunk,
+        TextChunker,
+        TextNormalizer,
+        TokenCounter,
+        detect_encoding,
+    )
+
+    _RUST_AVAILABLE = True
+except ImportError:
+    from TextSpitter._fallback import (
+        Chunk,
+        TextChunker,
+        TextNormalizer,
+        TokenCounter,
+        detect_encoding,
+    )
+
+    _RUST_AVAILABLE = False
+
 from .main import WordLoader
 
-__all__ = ["TextSpitter", "WordLoader", "__version__"]
+__all__ = [
+    "TextSpitter",
+    "WordLoader",
+    "TextNormalizer",
+    "TextChunker",
+    "TokenCounter",
+    "Chunk",
+    "detect_encoding",
+    "_RUST_AVAILABLE",
+    "__version__",
+]
 
 
 def TextSpitter(

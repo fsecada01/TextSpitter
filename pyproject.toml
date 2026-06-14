@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
 
 [tool.ruff]
 fix = true
@@ -92,8 +92,10 @@ textspitter = "TextSpitter.cli:main"
 Homepage = "https://github.com/fsecada01/TextSpitter"
 Issues = "https://github.com/fsecada01/TextSpitter/issues"
 
-[tool.setuptools]
-packages = ["TextSpitter", "TextSpitter.guide"]
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "TextSpitter._core"
+python-source = "."
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -119,4 +121,6 @@ dev = [
     "ruff",
     "ty",
     "twine",
+    "maturin>=1.14.0",
+    "tiktoken",
 ]

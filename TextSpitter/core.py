@@ -10,6 +10,8 @@ from typing import IO, BinaryIO, cast
 
 from docx import Document
 
+from TextSpitter import detect_encoding
+
 # --- Module-level imports for optional PDF libraries ---
 try:
     import pymupdf
@@ -301,32 +303,25 @@ class FileExtractor:
     def code_file_read(self) -> str:
         """
         Reads contents from programming language files (.py, .js, .java, etc.)
-        with enhanced encoding detection and preserves original formatting.
+        with encoding detection and preserves original formatting.
 
         Returns:
             str: The file content as a string
         """
         contents_bytes = self.get_contents()
-
-        # Common encodings for source code files
-        encodings_to_try = ["utf-8", "utf-8-sig", "latin-1", "cp1252"]
-
-        for encoding in encodings_to_try:
-            try:
-                content = contents_bytes.decode(encoding)
-                logger.info(
-                    f"Successfully decoded {self.file_name} using {encoding}"
-                )
-                return content
-            except UnicodeDecodeError:
-                continue
-
-        # If all encodings fail, use utf-8 with replacement
-        logger.warning(
-            f"Could not decode code file {self.file_name} with standard "
-            f"encodings, using utf-8 with replacement characters."
-        )
-        return contents_bytes.decode("utf-8", errors="replace")
+        encoding = detect_encoding(contents_bytes)
+        try:
+            content = contents_bytes.decode(encoding)
+            logger.info(
+                f"Successfully decoded {self.file_name} using {encoding}"
+            )
+            return content
+        except (UnicodeDecodeError, LookupError):
+            logger.warning(
+                f"Could not decode {self.file_name} with detected encoding "
+                f"'{encoding}', falling back to utf-8 with replacement."
+            )
+            return contents_bytes.decode("utf-8", errors="replace")
 
     def pdf_file_read(self) -> str:  # Added return type hint
         """

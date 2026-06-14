@@ -8,3 +8,14 @@ labs
 *.7z
 *.env
 *.egg*/
+
+# Rust / Maturin build artifacts
+target/
+*.pyd
+*.pdb
+*.so
+
+# IDE / tool state
+.idea/
+.serena/
+claudedocs/
