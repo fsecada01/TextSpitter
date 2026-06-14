@@ -456,7 +456,7 @@ def test_text_file_read_replace_on_decode_error(mocker, log_capture):
     result = extractor.text_file_read()
 
     assert (
-        "Could not decode text file badtext.txt with utf-8 or latin-1"
+        "Could not decode text file badtext.txt with utf-8, cp1252, or latin-1"
         in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")
@@ -506,7 +506,7 @@ def test_csv_file_read_replace_on_decode_error(mocker, log_capture):
     result = extractor.csv_file_read()
 
     assert (
-        "Could not decode CSV file bad.csv with utf-8 or latin-1"
+        "Could not decode CSV file bad.csv with utf-8, cp1252, or latin-1"
         in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")

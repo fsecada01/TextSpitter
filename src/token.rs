@@ -94,9 +94,18 @@ impl TokenCounter {
 }
 
 fn truncate_smart(tokens: &[usize], max_tokens: usize) -> Vec<usize> {
-    let keep_start = max_tokens / 2;
+    // Weight the head 2:1 over the tail — beginning of document carries more
+    // context; middle is dropped first, then tail is trimmed before head.
+    let n = tokens.len();
+    let keep_start = (max_tokens * 2).div_ceil(3);
     let keep_end = max_tokens - keep_start;
-    let mut result = tokens[..keep_start].to_vec();
-    result.extend_from_slice(&tokens[tokens.len() - keep_end..]);
-    result
+    let tail_start = n.saturating_sub(keep_end);
+
+    if keep_end == 0 || tail_start <= keep_start {
+        tokens[..max_tokens.min(n)].to_vec()
+    } else {
+        let mut result = tokens[..keep_start].to_vec();
+        result.extend_from_slice(&tokens[tail_start..]);
+        result
+    }
 }

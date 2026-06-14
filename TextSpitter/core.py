@@ -400,8 +400,12 @@ class FileExtractor:
 
     def _decode_bytes(self, data: bytes, label: str) -> str:
         """
-        Decode bytes to str, trying UTF-8 then latin-1 then UTF-8 with
-        replacement characters.
+        Decode bytes to str, trying UTF-8, cp1252, then latin-1, then UTF-8
+        with replacement characters.
+
+        cp1252 is tried before latin-1 so Windows smart-quote bytes (0x80-0x9F)
+        decode to printable characters instead of C1 control characters.
+        latin-1 always succeeds and acts as the final deterministic fallback.
 
         Args:
             data: Raw bytes to decode.
@@ -410,16 +414,13 @@ class FileExtractor:
         Returns:
             str
         """
-        try:
-            return data.decode("utf-8")
-        except UnicodeDecodeError:
-            pass
-        try:
-            return data.decode("latin-1")
-        except UnicodeDecodeError:
-            pass
+        for enc in ("utf-8", "cp1252", "latin-1"):
+            try:
+                return data.decode(enc)
+            except (UnicodeDecodeError, LookupError):
+                continue
         logger.warning(
-            f"Could not decode {label} with utf-8 or latin-1, "
+            f"Could not decode {label} with utf-8, cp1252, or latin-1, "
             f"using utf-8 with replacement characters."
         )
         return data.decode("utf-8", errors="replace")

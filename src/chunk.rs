@@ -189,21 +189,19 @@ impl TextChunker {
 
             let pending_tokens = bpe.encode_with_special_tokens(&current_text).len();
 
+            // Always flush on overflow — max_tokens is a hard cap; min_tokens
+            // is a soft target that must not allow chunks to exceed max_tokens.
             if pending_tokens + unit_tokens > self.max_tokens && !current_text.is_empty() {
-                // Emit pending chunk if it meets min_tokens.
-                let pending_count = bpe.encode_with_special_tokens(&current_text).len();
-                if pending_count >= self.min_tokens || chunks.is_empty() {
-                    chunks.push(self.make_chunk(
-                        &current_text,
-                        &bpe,
-                        current_start,
-                        char_cursor,
-                        current_section.clone(),
-                        false,
-                    ));
-                    current_text.clear();
-                    current_start = char_cursor;
-                }
+                chunks.push(self.make_chunk(
+                    &current_text,
+                    &bpe,
+                    current_start,
+                    char_cursor,
+                    current_section.clone(),
+                    false,
+                ));
+                current_text.clear();
+                current_start = char_cursor;
             }
 
             if let Some(title) = &unit.section_title {
@@ -338,15 +336,20 @@ fn push_text_units(
 
 fn find_table_end(text: &str, start: usize) -> usize {
     let from = &text[start..];
-    let mut end = start;
+    let mut offset = 0usize;
     for line in from.lines() {
-        if line.trim_start().starts_with('|') {
-            end += line.len() + 1; // +1 for newline
-        } else if line.trim().is_empty() {
-            end += line.len() + 1;
+        if line.trim_start().starts_with('|') || line.trim().is_empty() {
+            offset += line.len();
+            // lines() strips line terminators; advance past the actual bytes
+            // so CRLF (2 bytes) is handled correctly, not just LF (1 byte).
+            if from[offset..].starts_with("\r\n") {
+                offset += 2;
+            } else if offset < from.len() {
+                offset += 1;
+            }
         } else {
             break;
         }
     }
-    end.min(text.len())
+    (start + offset).min(text.len())
 }

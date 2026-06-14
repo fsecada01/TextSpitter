@@ -15,7 +15,7 @@ def detect_encoding(data: bytes) -> str:
     """Detect encoding by trying common codecs in priority order."""
     if not data:
         return "utf-8"
-    for enc in ("utf-8", "utf-8-sig", "latin-1", "cp1252"):
+    for enc in ("utf-8", "utf-8-sig", "cp1252", "latin-1"):
         try:
             data.decode(enc)
             return enc
@@ -150,15 +150,18 @@ class TextChunker:
             import tiktoken
 
             enc = tiktoken.get_encoding(self.tokenizer)
-            return len(enc.encode(text))
+            # Mirror Rust encode_with_special_tokens: allow all special tokens.
+            return len(enc.encode(text, allowed_special="all"))
         except Exception:
-            # Rough character-based fallback: ~4 chars per token
             return len(text) // 4
 
     def chunk(self, text: str) -> list[Chunk]:
         import re
 
-        paragraphs = [p.strip() for p in re.split(r"\n\n+", text) if p.strip()]
+        # Split with a capturing group so we can measure the actual separator
+        # length (2+ newlines). Without this, char_cursor drifts when gaps use
+        # 3+ newlines because the old code always added a fixed +2.
+        pieces = re.split(r"(\n\n+)", text)
         chunks: list[Chunk] = []
         current_parts: list[str] = []
         current_tokens = 0
@@ -166,8 +169,55 @@ class TextChunker:
         current_start = 0
         section_title: str | None = None
 
-        for para in paragraphs:
+        for idx, piece in enumerate(pieces):
+            if idx % 2 == 1:
+                # Odd indices are separator strings ("\n\n", "\n\n\n", …)
+                char_cursor += len(piece)
+                continue
+
+            para = piece.strip()
+            if not para:
+                char_cursor += len(piece)
+                continue
+
             para_tokens = self._count(para)
+
+            # Single paragraph exceeds max_tokens — emit as oversized.
+            if para_tokens > self.max_tokens:
+                if current_parts:
+                    chunk_text = "\n\n".join(current_parts)
+                    chunks.append(
+                        Chunk(
+                            text=chunk_text,
+                            token_count=current_tokens,
+                            char_start=current_start,
+                            char_end=char_cursor,
+                            section_title=section_title,
+                            chunk_index=0,
+                            total_chunks=None,
+                            metadata={},
+                        )
+                    )
+                    current_parts = []
+                    current_tokens = 0
+                    current_start = char_cursor
+                end = char_cursor + len(piece)
+                chunks.append(
+                    Chunk(
+                        text=para,
+                        token_count=para_tokens,
+                        char_start=char_cursor,
+                        char_end=end,
+                        section_title=section_title,
+                        chunk_index=0,
+                        total_chunks=None,
+                        metadata={"oversized": True},
+                    )
+                )
+                char_cursor = end
+                current_start = char_cursor
+                continue
+
             if current_tokens + para_tokens > self.max_tokens and current_parts:
                 chunk_text = "\n\n".join(current_parts)
                 chunks.append(
@@ -188,7 +238,7 @@ class TextChunker:
 
             current_parts.append(para)
             current_tokens += para_tokens
-            char_cursor += len(para) + 2  # +2 for \n\n
+            char_cursor += len(piece)
 
         if current_parts:
             chunk_text = "\n\n".join(current_parts)
@@ -235,7 +285,13 @@ class TokenCounter:
 
     def count(self, text: str) -> int:
         bpe = self._bpe()
-        return len(bpe.encode(text)) if bpe else len(text) // 4
+        # allowed_special="all" mirrors Rust encode_with_special_tokens and
+        # prevents ValueError when text contains tokens like <|endoftext|>.
+        return (
+            len(bpe.encode(text, allowed_special="all"))
+            if bpe
+            else len(text) // 4
+        )
 
     def count_batch(self, texts: list[str]) -> list[int]:
         return [self.count(t) for t in texts]
@@ -255,7 +311,7 @@ class TokenCounter:
             else:
                 kept = words[:max_tokens]
             return " ".join(kept)
-        tokens = bpe.encode(text)
+        tokens = bpe.encode(text, allowed_special="all")
         if len(tokens) <= max_tokens:
             return text
         if strategy == "middle":

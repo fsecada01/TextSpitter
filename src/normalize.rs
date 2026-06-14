@@ -82,20 +82,25 @@ fn strip_headers_footers(text: &str) -> String {
         .map(|p| p.lines().collect())
         .collect();
 
-    let candidate_lines: std::collections::HashSet<&str> = all_lines[0]
-        .iter()
+    // Collect every unique non-empty line from all pages, then keep only those
+    // present on more than half the pages. Seeding from page 0 alone misses
+    // running headers when page 0 is a cover page with no shared lines.
+    let all_unique: std::collections::HashSet<&str> = all_lines.iter()
+        .flat_map(|pg| pg.iter().copied())
+        .filter(|l| !l.trim().is_empty())
+        .collect();
+
+    let candidate_lines: std::collections::HashSet<&str> = all_unique
+        .into_iter()
         .filter(|line| {
             let trimmed = line.trim();
-            if trimmed.is_empty() { return false; }
             let count = all_lines.iter()
                 .filter(|page_lines| {
                     page_lines.iter().any(|l| l.trim() == trimmed)
                 })
                 .count();
-            // Present on more than half the pages = header/footer
             count * 2 > pages.len()
         })
-        .copied()
         .collect();
 
     if candidate_lines.is_empty() {

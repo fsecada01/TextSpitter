@@ -25,6 +25,13 @@ pub fn detect_encoding(data: &[u8]) -> String {
         return "utf-8".into();
     }
 
+    // Explicit BOM check before chardetng: chardetng returns "UTF-8" for
+    // BOM-prefixed files, but Python's "utf-8" codec preserves the BOM at
+    // position 0. "utf-8-sig" strips it during decode.
+    if data.starts_with(b"\xef\xbb\xbf") {
+        return "utf-8-sig".into();
+    }
+
     // Feed the entire buffer; last=true signals end-of-stream.
     let mut detector = EncodingDetector::new();
     detector.feed(data, true);
