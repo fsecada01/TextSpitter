@@ -282,34 +282,23 @@ def test_code_file_read_latin1():
 
 
 def test_code_file_read_fallback_to_replace_on_decode_error(mocker, log_capture):
-    original_bytes_content = b"\x80\x90\xa0"  # Intended to fail initial decodes
+    # Bytes that are invalid UTF-8 — will fail the detected encoding decode.
+    original_bytes_content = b"\x80\x90\xa0"
 
-    mock_bytes_instance = MagicMock(spec=bytes)
-
-    def mock_decode_side_effect(encoding, errors=None):
-        if encoding == "utf-8" and errors == "replace":
-            return original_bytes_content.decode("utf-8", errors="replace")
-        if encoding in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
-            raise UnicodeDecodeError(
-                encoding, b"", 0, 0, "mocked reason for loop fail"
-            )
-        return original_bytes_content.decode(
-            encoding, errors=errors or "strict"
-        )  # Fallback for unexpected calls
-
-    mock_bytes_instance.decode = MagicMock(side_effect=mock_decode_side_effect)
     mocker.patch.object(
-        FileExtractor, "get_contents", return_value=mock_bytes_instance
+        FileExtractor, "get_contents", return_value=original_bytes_content
     )
+    # Force detect_encoding to return utf-8 so the decode attempt fails,
+    # exercising the utf-8-with-replacement fallback path in code_file_read.
+    mocker.patch("TextSpitter.core.detect_encoding", return_value="utf-8")
 
     extractor = FileExtractor(filename="broken.bin")
     decoded_content = extractor.code_file_read()
 
-    assert (
-        "Could not decode code file broken.bin with standard encodings"
-        in "\n".join(log_capture)
+    assert any(
+        "falling back to utf-8 with replacement" in line
+        for line in log_capture
     )
-    mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")
     assert decoded_content == original_bytes_content.decode(
         "utf-8", errors="replace"
     )
@@ -467,7 +456,7 @@ def test_text_file_read_replace_on_decode_error(mocker, log_capture):
     result = extractor.text_file_read()
 
     assert (
-        "Could not decode text file badtext.txt with utf-8 or latin-1"
+        "Could not decode text file badtext.txt with utf-8, cp1252, or latin-1"
         in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")
@@ -517,7 +506,7 @@ def test_csv_file_read_replace_on_decode_error(mocker, log_capture):
     result = extractor.csv_file_read()
 
     assert (
-        "Could not decode CSV file bad.csv with utf-8 or latin-1"
+        "Could not decode CSV file bad.csv with utf-8, cp1252, or latin-1"
         in "\n".join(log_capture)
     )
     mock_bytes_instance.decode.assert_any_call("utf-8", errors="replace")

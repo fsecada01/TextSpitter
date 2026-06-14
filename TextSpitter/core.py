@@ -10,6 +10,8 @@ from typing import IO, BinaryIO, cast
 
 from docx import Document
 
+from TextSpitter import detect_encoding
+
 # --- Module-level imports for optional PDF libraries ---
 try:
     import pymupdf
@@ -301,32 +303,25 @@ class FileExtractor:
     def code_file_read(self) -> str:
         """
         Reads contents from programming language files (.py, .js, .java, etc.)
-        with enhanced encoding detection and preserves original formatting.
+        with encoding detection and preserves original formatting.
 
         Returns:
             str: The file content as a string
         """
         contents_bytes = self.get_contents()
-
-        # Common encodings for source code files
-        encodings_to_try = ["utf-8", "utf-8-sig", "latin-1", "cp1252"]
-
-        for encoding in encodings_to_try:
-            try:
-                content = contents_bytes.decode(encoding)
-                logger.info(
-                    f"Successfully decoded {self.file_name} using {encoding}"
-                )
-                return content
-            except UnicodeDecodeError:
-                continue
-
-        # If all encodings fail, use utf-8 with replacement
-        logger.warning(
-            f"Could not decode code file {self.file_name} with standard "
-            f"encodings, using utf-8 with replacement characters."
-        )
-        return contents_bytes.decode("utf-8", errors="replace")
+        encoding = detect_encoding(contents_bytes)
+        try:
+            content = contents_bytes.decode(encoding)
+            logger.info(
+                f"Successfully decoded {self.file_name} using {encoding}"
+            )
+            return content
+        except (UnicodeDecodeError, LookupError):
+            logger.warning(
+                f"Could not decode {self.file_name} with detected encoding "
+                f"'{encoding}', falling back to utf-8 with replacement."
+            )
+            return contents_bytes.decode("utf-8", errors="replace")
 
     def pdf_file_read(self) -> str:  # Added return type hint
         """
@@ -405,8 +400,12 @@ class FileExtractor:
 
     def _decode_bytes(self, data: bytes, label: str) -> str:
         """
-        Decode bytes to str, trying UTF-8 then latin-1 then UTF-8 with
-        replacement characters.
+        Decode bytes to str, trying UTF-8, cp1252, then latin-1, then UTF-8
+        with replacement characters.
+
+        cp1252 is tried before latin-1 so Windows smart-quote bytes (0x80-0x9F)
+        decode to printable characters instead of C1 control characters.
+        latin-1 always succeeds and acts as the final deterministic fallback.
 
         Args:
             data: Raw bytes to decode.
@@ -415,16 +414,13 @@ class FileExtractor:
         Returns:
             str
         """
-        try:
-            return data.decode("utf-8")
-        except UnicodeDecodeError:
-            pass
-        try:
-            return data.decode("latin-1")
-        except UnicodeDecodeError:
-            pass
+        for enc in ("utf-8", "cp1252", "latin-1"):
+            try:
+                return data.decode(enc)
+            except (UnicodeDecodeError, LookupError):
+                continue
         logger.warning(
-            f"Could not decode {label} with utf-8 or latin-1, "
+            f"Could not decode {label} with utf-8, cp1252, or latin-1, "
             f"using utf-8 with replacement characters."
         )
         return data.decode("utf-8", errors="replace")
