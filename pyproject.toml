@@ -112,6 +112,7 @@ python-version = "3.12"
 dev = [
     "black>=26.10.1",
     "build>=1.6.1",
+    "cryptography>=50.0.2",
     "isort>=9.0.2",
     "jupyterlab>=4.6.6",
     "jupyterlab-code-formatter>=3.1.0",
