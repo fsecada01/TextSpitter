@@ -77,13 +77,17 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pymupdf",
-    "pypdf",
-    "python-docx",
+    # Capped below 2: PyMuPDF 2.x adds numpy, onnxruntime, networkx, psutil,
+    # pyyaml, tabulate, pymupdf-layout and pymupdf4llm as hard dependencies and
+    # drops musllinux/win32/macOS-x86_64 wheels; TextSpitter only uses
+    # pymupdf.open(...) and page text extraction. Owner decision to lift.
+    "pymupdf>=1.28.2,<2",
+    "pypdf>=7.1.1",
+    "python-docx>=1.2.0",
 ]
 
 [project.optional-dependencies]
-logging = ["loguru"]
+logging = ["loguru>=0.8.0"]
 
 [project.scripts]
 textspitter = "TextSpitter.cli:main"
@@ -106,21 +110,22 @@ python-version = "3.12"
 
 [dependency-groups]
 dev = [
-    "black",
-    "build",
-    "isort",
-    "jupyterlab",
-    "jupyterlab-code-formatter",
-    "loguru",
-    "pdoc",
-    "prek",
-    "pytest",
-    "pytest-cov",
-    "pytest-lazy-fixtures",
-    "pytest-mock",
-    "ruff",
-    "ty",
-    "twine",
-    "maturin>=1.14.0",
-    "tiktoken",
+    "black>=26.10.1",
+    "build>=1.6.1",
+    "cryptography>=50.0.2",
+    "isort>=9.0.2",
+    "jupyterlab>=4.6.6",
+    "jupyterlab-code-formatter>=3.1.0",
+    "loguru>=0.8.0",
+    "pdoc>=16.0.0",
+    "prek>=0.5.11",
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "pytest-lazy-fixtures>=1.4.1",
+    "pytest-mock>=3.17.0",
+    "ruff>=0.17.6",
+    "ty>=0.0.107",
+    "twine>=7.0.0",
+    "maturin>=1.16.0",
+    "tiktoken>=0.14.0",
 ]
