@@ -1,0 +1,89 @@
+# factory-engine configuration. Unknown keys are errors.
+#
+# Pilot setup: the engine opens draft pull requests against the branch
+# pilot/factory-engine. It never pushes to main and never merges. Work
+# reaches main through an ordinary pull request from the pilot branch.
+
+[engine]
+target_branch = "pilot/factory-engine"
+goals_dir = "goals"
+max_workers = 2          # concurrent attempts across all engine processes
+max_attempts = 3         # consuming failures per contract before escalation
+lease_ttl_seconds = 120
+gate_timeout_seconds = 1800
+
+# Deterministic gates. The engine runs every one of these itself, in
+# order, in the candidate worktree. A command is a list (no shell) or a
+# string (run through the shell).
+[gates]
+lint = "uv run --no-sync ruff check --no-fix ."
+types = "uv run --no-sync ty check"
+test = "uv run --no-sync pytest tests/ -q"
+
+# Optional: a different set to run on the exact rebased commit just
+# before landing. Defaults to [gates].
+# [health]
+# smoke = ["uv", "run", "pytest", "-q", "-x"]
+
+[worktree]
+# Commands run in each fresh worktree before the builder starts.
+# This installs every extra and the dev group, and builds the Rust
+# extension with maturin. --frozen leaves uv.lock alone; the gates then
+# use --no-sync so they run in exactly this environment.
+setup = ["uv sync --frozen --all-extras --dev"]
+
+[agents.builder]
+# The prompt arrives on stdin; the working directory is the worktree.
+# --strict-mcp-config starts the session without your MCP servers.
+# File edits are allowed inside the worktree; the Bash allow-list lets
+# the builder run the same commands the gates run, and nothing else.
+command = [
+    "claude",
+    "-p",
+    "--model",
+    "sonnet",
+    "--strict-mcp-config",
+    "--permission-mode",
+    "acceptEdits",
+    "--allowedTools",
+    "Bash(git status *)",
+    "Bash(git diff *)",
+    "Bash(git log *)",
+    "Bash(uv run --no-sync ruff)",
+    "Bash(uv run --no-sync ruff *)",
+    "Bash(uv run --no-sync ty)",
+    "Bash(uv run --no-sync ty *)",
+    "Bash(uv run --no-sync pytest)",
+    "Bash(uv run --no-sync pytest *)",
+]
+timeout_seconds = 1200
+livelock_seconds = 900   # busy but no file changed for this long; 0 = off
+
+[agents.reviewer]
+# Read-only: any tool not listed here is denied.
+command = [
+    "claude",
+    "-p",
+    "--model",
+    "sonnet",
+    "--strict-mcp-config",
+    "--permission-mode",
+    "dontAsk",
+    "--allowedTools",
+    "Read",
+    "Grep",
+    "Glob",
+]
+timeout_seconds = 900
+
+[review]
+max_rounds = 2
+
+[landing]
+mode = "pr"          # "direct" = fast-forward; "pr" = open a draft PR
+remote = "origin"      # "" = local only
+approval = "contract"    # contract | always | never (direct mode only)
+
+[commit]
+# Extra trailer lines added to every commit the engine makes.
+trailers = ["Co-Authored-By: Claude <noreply@anthropic.com>"]
