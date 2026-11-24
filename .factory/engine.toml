@@ -32,6 +32,12 @@ test = "uv run --no-sync pytest tests/ -q"
 # use --no-sync so they run in exactly this environment.
 setup = ["uv sync --frozen --all-extras --dev"]
 
+# Set for everything the engine starts. Without this, a plain `uv run`
+# by an agent rewrites uv.lock and the protected-path guard rejects the
+# attempt.
+[env]
+UV_FROZEN = "1"
+
 [agents.builder]
 # The prompt arrives on stdin; the working directory is the worktree.
 # --strict-mcp-config starts the session without your MCP servers.
