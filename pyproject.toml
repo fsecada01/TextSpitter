@@ -77,11 +77,12 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    # Capped below 2: PyMuPDF 2.x adds numpy, onnxruntime, networkx, psutil,
-    # pyyaml, tabulate, pymupdf-layout and pymupdf4llm as hard dependencies and
-    # drops musllinux/win32/macOS-x86_64 wheels; TextSpitter only uses
-    # pymupdf.open(...) and page text extraction. Owner decision to lift.
-    "pymupdf>=1.28.2,<2",
+    # PyMuPDF 2.x adds numpy, onnxruntime, networkx, psutil, pyyaml, tabulate,
+    # pymupdf-layout and pymupdf4llm as hard dependencies and drops
+    # musllinux/win32/macOS-x86_64 wheels. The owner accepted that trade-off
+    # and lifted the former <2 cap. TextSpitter only uses pymupdf.open(...)
+    # and page text extraction.
+    "pymupdf>=2.1",
     "pypdf>=7.1.1",
     "python-docx>=1.2.0",
 ]
