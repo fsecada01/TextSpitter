@@ -102,9 +102,9 @@ def test_truncate_keeps_first_words_when_over_limit(counter):
     assert counter.truncate(WORDS, 3) == "w1 w2 w3"
 
 
-def test_truncate_joins_kept_words_with_single_spaces(counter):
+def test_truncate_keeps_original_separators_between_kept_words(counter):
     text = "w1   w2\n\nw3\tw4  w5"
-    assert counter.truncate(text, 3) == "w1 w2 w3"
+    assert counter.truncate(text, 3) == "w1   w2\n\nw3"
 
 
 def test_truncate_one_word_over_limit(counter):
@@ -142,9 +142,11 @@ def test_truncate_middle_minimum_max_tokens(counter):
     assert counter.truncate(WORDS, 2, strategy="middle") == "w1 w10"
 
 
-def test_truncate_middle_joins_with_single_spaces(counter):
-    text = "w1   w2\n\nw3\tw4  w5 w6"
-    assert counter.truncate(text, 4, strategy="middle") == "w1 w2 w5 w6"
+def test_truncate_middle_keeps_original_separators_within_head_and_tail(
+    counter,
+):
+    text = "w1   w2\n\nw3\tw4  w5\tw6"
+    assert counter.truncate(text, 4, strategy="middle") == "w1   w2 w5\tw6"
 
 
 def test_truncate_middle_unchanged_when_words_within_limit(counter):

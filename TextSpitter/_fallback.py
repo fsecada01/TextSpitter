@@ -7,6 +7,7 @@ either path without branching.
 
 from __future__ import annotations
 
+import re
 import unicodedata
 from typing import Literal
 
@@ -299,24 +300,32 @@ class TokenCounter:
     def truncate(
         self, text: str, max_tokens: int, strategy: str = "end"
     ) -> str:
+        if max_tokens < 0:
+            raise ValueError(f"max_tokens must be >= 0, got {max_tokens}")
         bpe = self._bpe()
         if bpe is None:
-            # Word-based approximation: ~1 token per word
-            words = text.split()
-            if len(words) <= max_tokens:
+            # Word-based approximation: ~1 token per word. Kept words keep
+            # the original separators between them.
+            spans = [m.span() for m in re.finditer(r"\S+", text)]
+            if len(spans) <= max_tokens:
                 return text
+            if max_tokens == 0:
+                return ""
             if strategy == "middle":
                 half = max_tokens // 2
-                kept = words[:half] + words[-(max_tokens - half) :]
-            else:
-                kept = words[:max_tokens]
-            return " ".join(kept)
+                first_tail = len(spans) - (max_tokens - half)
+                tail = text[spans[first_tail][0] : spans[-1][1]]
+                if half == 0:
+                    return tail
+                head = text[spans[0][0] : spans[half - 1][1]]
+                return f"{head} {tail}"
+            return text[spans[0][0] : spans[max_tokens - 1][1]]
         tokens = bpe.encode(text, allowed_special="all")
         if len(tokens) <= max_tokens:
             return text
         if strategy == "middle":
             half = max_tokens // 2
-            kept = tokens[:half] + tokens[-(max_tokens - half) :]
+            kept = tokens[:half] + tokens[len(tokens) - (max_tokens - half) :]
         else:
             kept = tokens[:max_tokens]
         return bpe.decode(kept)
