@@ -12,11 +12,7 @@ from io import BytesIO
 
 import pytest
 from pypdf import PdfReader, PdfWriter
-from pypdf.generic import (
-    DecodedStreamObject,
-    DictionaryObject,
-    NameObject,
-)
+from pypdf.generic import ContentStream, DictionaryObject, NameObject
 
 from TextSpitter import core
 from TextSpitter.core import FileExtractor
@@ -42,7 +38,9 @@ def _build_pdf(
         page[NameObject("/Resources")] = DictionaryObject(
             {NameObject("/Font"): DictionaryObject({NameObject("/F1"): font})}
         )
-        stream = DecodedStreamObject()
+        # pypdf 7 types ``replace_contents`` as taking a ``ContentStream``
+        # (a ``DecodedStreamObject`` subclass), not a bare decoded stream.
+        stream = ContentStream(None, writer)
         stream.set_data(f"BT /F1 18 Tf 20 100 Td ({text}) Tj ET".encode())
         page.replace_contents(stream)
     if encrypt_with is not None:

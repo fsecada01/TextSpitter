@@ -3,6 +3,7 @@ Shared pytest fixtures for TextSpitter tests.
 """
 
 import logging
+from typing import Any, cast
 
 import pytest
 
@@ -31,9 +32,14 @@ def log_capture():
         def _sink(message):
             messages.append(message.record["message"])
 
-        handler_id = logger.add(_sink, level="DEBUG", format="{message}")
+        # ``hasattr`` narrows ``logger`` to an object with an ``add`` member
+        # of type ``object``; cast so the loguru API stays callable for ty.
+        loguru_logger = cast("Any", logger)
+        handler_id = loguru_logger.add(
+            _sink, level="DEBUG", format="{message}"
+        )
         yield messages
-        logger.remove(handler_id)
+        loguru_logger.remove(handler_id)
     else:
         # stdlib logging fallback
         class _ListHandler(logging.Handler):
