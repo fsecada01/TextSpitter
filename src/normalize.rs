@@ -37,7 +37,7 @@ impl TextNormalizer {
         py: Python<'_>,
         texts: Vec<String>,
     ) -> Vec<String> {
-        py.allow_threads(|| {
+        py.detach(|| {
             texts.par_iter().map(|t| self.normalize_one(t)).collect()
         })
     }
