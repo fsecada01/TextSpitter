@@ -74,7 +74,9 @@ requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
 ]
 dependencies = [
     # PyMuPDF 2.x adds numpy, onnxruntime, networkx, psutil, pyyaml, tabulate,

@@ -38,11 +38,13 @@ jobs:
           name: wheels-windows-x64
           path: dist
 
+  # PyMuPDF 2.x (and its onnxruntime dependency) publish no macOS x86_64
+  # wheels, so only the Apple Silicon wheel is built.
   macos:
     runs-on: macos-latest
     strategy:
       matrix:
-        target: [x86_64, aarch64]
+        target: [aarch64]
     steps:
       - uses: actions/checkout@v4
       - uses: PyO3/maturin-action@v1
