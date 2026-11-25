@@ -129,10 +129,10 @@ TextSpitter/
 
 ### Prerequisites
 
-- **Python** ≥ 3.10
+- **Python** ≥ 3.12
 - **[uv](https://docs.astral.sh/uv/)** (recommended) or pip
 - No Rust toolchain required — pre-built wheels are provided for Linux (x86_64, aarch64), Windows (x64), and macOS (Apple Silicon)
-- Supported platforms follow PyMuPDF 2.x: macOS arm64, Linux manylinux x86_64/aarch64 and Windows x64. On other platforms (Intel macOS, musllinux/Alpine, 32-bit or ARM Windows) `pip` falls back to the sdist, which needs a Rust toolchain and an environment where `pymupdf>=2.1` can be installed
+- Supported platforms follow PyMuPDF 2.x: macOS arm64, Linux manylinux x86_64/aarch64 and Windows x64. Other platforms (Intel macOS, musllinux/Alpine, 32-bit or ARM Windows) are not supported: PyMuPDF 2.x publishes no wheel for them, so installation works only if you can build both the sdist (needs a Rust toolchain) and `pymupdf>=2.1` from source, and may fail
 
 ### Installation
 
