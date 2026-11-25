@@ -86,8 +86,9 @@ timeout_seconds = 900
 max_rounds = 2
 
 [landing]
-mode = "pr"          # "direct" = fast-forward; "pr" = open a draft PR
+mode = "pr"          # "direct" = fast-forward; "pr" = open a pull request
 remote = "origin"      # "" = local only
+assignees = ["@me"]    # every pull request is assigned to the gh user
 approval = "contract"    # contract | always | never (direct mode only)
 
 [commit]
