@@ -1,3 +1,4 @@
+from typing import Any, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -32,13 +33,14 @@ def loguru_test_sink(request):  # request is a pytest fixture
     def sink_function(message):
         log_messages.append(message.record["message"])
 
-    handler_id = word_loader_logger_instance.add(
-        sink_function, format="{message}"
-    )
+    # ``hasattr`` above narrows the logger to an object with ``add``/``remove``
+    # members of type ``object``; cast so the loguru API stays callable for ty.
+    loguru_logger = cast("Any", word_loader_logger_instance)
+    handler_id = loguru_logger.add(sink_function, format="{message}")
     yield log_messages
 
     try:
-        word_loader_logger_instance.remove(handler_id)
+        loguru_logger.remove(handler_id)
     except ValueError:
         pass  # Handler already removed or never added
 
