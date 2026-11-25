@@ -16,7 +16,7 @@ fn load_bpe(name: &str) -> Result<CoreBPE, String> {
 }
 
 /// A single chunk produced by ``TextChunker``.
-#[pyclass(get_all)]
+#[pyclass(get_all, skip_from_py_object)]
 #[derive(Clone, Debug)]
 pub struct Chunk {
     /// The chunk text.
@@ -112,7 +112,7 @@ impl TextChunker {
         let preserve_tables = self.preserve_tables;
         let section_patterns = self.section_patterns.clone();
 
-        py.allow_threads(|| {
+        py.detach(|| {
             texts.par_iter()
                 .map(|text| {
                     let chunker = TextChunker {
