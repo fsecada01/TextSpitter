@@ -307,7 +307,8 @@ class TokenCounter:
                 return text
             if strategy == "middle":
                 half = max_tokens // 2
-                kept = words[:half] + words[-(max_tokens - half) :]
+                tail = len(words) - (max_tokens - half)
+                kept = words[:half] + words[tail:]
             else:
                 kept = words[:max_tokens]
             return " ".join(kept)
@@ -316,7 +317,8 @@ class TokenCounter:
             return text
         if strategy == "middle":
             half = max_tokens // 2
-            kept = tokens[:half] + tokens[-(max_tokens - half) :]
+            tail = len(tokens) - (max_tokens - half)
+            kept = tokens[:half] + tokens[tail:]
         else:
             kept = tokens[:max_tokens]
         return bpe.decode(kept)
