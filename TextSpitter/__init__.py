@@ -10,7 +10,9 @@ except PackageNotFoundError:
     __version__ = "unknown"
 
 try:
-    from TextSpitter._core import (  # type: ignore[import]
+    # ``_core`` is a compiled maturin extension with no stub, so ty cannot
+    # resolve it; the ``except ImportError`` below covers its absence at runtime.
+    from TextSpitter._core import (  # ty: ignore[import-not-found]
         Chunk,
         TextChunker,
         TextNormalizer,

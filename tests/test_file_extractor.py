@@ -256,7 +256,8 @@ def test_get_contents_stream_returns_string_warns_and_encodes(log_capture):
 
 def test_get_contents_unsupported_type_raises_error():
     extractor = FileExtractor(filename="dummy.txt")
-    extractor.file = 12345  # An unsupported type
+    # An unsupported type, assigned on purpose to exercise the TypeError path.
+    extractor.file = 12345  # ty: ignore[invalid-assignment]
     with pytest.raises(
         TypeError,
         match="FileExtractor: self.file is of an unexpected type '<class 'int'>'",

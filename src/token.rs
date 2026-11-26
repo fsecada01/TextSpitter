@@ -45,7 +45,7 @@ impl TokenCounter {
         texts: Vec<String>,
     ) -> PyResult<Vec<usize>> {
         let model = self.model.clone();
-        py.allow_threads(|| {
+        py.detach(|| {
             texts.par_iter()
                 .map(|t| {
                     load_bpe(&model)
